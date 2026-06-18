@@ -72,6 +72,8 @@ public class AccountController : Controller
     {
         if (!ModelState.IsValid) return View(model);
 
+        // Member login authenticates ONLY against the Adopter table.
+        // Admins sign in through the separate /Admin/Login page.
         var adopter = await _db.Adopters.FirstOrDefaultAsync(a => a.Email == model.Email);
         if (adopter is not null && BCrypt.Net.BCrypt.Verify(model.Password, adopter.PasswordHash))
         {
@@ -81,14 +83,6 @@ public class AccountController : Controller
                 return Redirect(model.ReturnUrl);
 
             return RedirectToAction("Index", "Home");
-        }
-
-        // Not an adopter — try the Admin table.
-        var admin = await _db.Admins.FirstOrDefaultAsync(a => a.Email == model.Email);
-        if (admin is not null && BCrypt.Net.BCrypt.Verify(model.Password, admin.PasswordHash))
-        {
-            await SignInAdminAsync(admin);
-            return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
         }
 
         ModelState.AddModelError(string.Empty, "Invalid email or password.");
@@ -113,7 +107,7 @@ public class AccountController : Controller
         var adopter = await CurrentAdopterAsync();
         if (adopter is null) return RedirectToAction(nameof(Login));
 
-        return View(new ProfileViewModel
+        var model = new ProfileViewModel
         {
             AdopterId = adopter.AdopterId,
             Email = adopter.Email,
@@ -124,7 +118,10 @@ public class AccountController : Controller
             HasOtherPets = adopter.HasOtherPets,
             HasChildren = adopter.HasChildren,
             ExperienceLevel = adopter.ExperienceLevel
-        });
+        };
+
+        await PopulateStatsAsync(model, adopter.AdopterId);
+        return View(model);
     }
 
     [Authorize(Roles = "Adopter")]
@@ -134,9 +131,26 @@ public class AccountController : Controller
         var adopter = await CurrentAdopterAsync();
         if (adopter is null) return RedirectToAction(nameof(Login));
 
+        // Password change is optional; validate only when requested.
+        var wantsPasswordChange =
+            !string.IsNullOrEmpty(model.CurrentPassword) ||
+            !string.IsNullOrEmpty(model.NewPassword) ||
+            !string.IsNullOrEmpty(model.ConfirmNewPassword);
+
+        if (wantsPasswordChange)
+        {
+            if (string.IsNullOrEmpty(model.CurrentPassword) ||
+                !BCrypt.Net.BCrypt.Verify(model.CurrentPassword, adopter.PasswordHash))
+                ModelState.AddModelError(nameof(model.CurrentPassword), "Current password is incorrect.");
+
+            if (string.IsNullOrEmpty(model.NewPassword))
+                ModelState.AddModelError(nameof(model.NewPassword), "Enter a new password.");
+        }
+
         if (!ModelState.IsValid)
         {
             model.Email = adopter.Email;
+            await PopulateStatsAsync(model, adopter.AdopterId);
             return View(model);
         }
 
@@ -147,10 +161,37 @@ public class AccountController : Controller
         adopter.HasOtherPets = model.HasOtherPets;
         adopter.HasChildren = model.HasChildren;
         adopter.ExperienceLevel = model.ExperienceLevel;
+
+        if (wantsPasswordChange)
+            adopter.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword, workFactor: 10);
+
         await _db.SaveChangesAsync();
 
-        TempData["Success"] = "Profile updated.";
+        TempData["Success"] = wantsPasswordChange ? "Profile and password updated." : "Profile updated.";
         return RedirectToAction(nameof(Profile));
+    }
+
+    private async Task PopulateStatsAsync(ProfileViewModel model, int adopterId)
+    {
+        var adoptions = await _db.Adoptions
+            .Where(a => a.AdopterId == adopterId)
+            .Include(a => a.Pet)
+            .OrderByDescending(a => a.ApplicationDate)
+            .ThenByDescending(a => a.AdoptionId)
+            .ToListAsync();
+
+        model.TotalApplications = adoptions.Count;
+        model.CompletedAdoptions = adoptions.Count(a => a.Status == "Completed");
+        model.PendingApplications = adoptions.Count(a => a.Status == "Pending");
+        model.RecentApplications = adoptions.Take(3).ToList();
+
+        model.FavoritesCount = await _db.Favorites.CountAsync(f => f.AdopterId == adopterId);
+        model.RecentFavorites = await _db.Favorites
+            .Where(f => f.AdopterId == adopterId)
+            .Include(f => f.Pet)
+            .OrderByDescending(f => f.DateAdded)
+            .Take(4)
+            .ToListAsync();
     }
 
     // ---------- Helpers ----------
@@ -163,23 +204,6 @@ public class AccountController : Controller
             new(ClaimTypes.Name, adopter.FullName),
             new(ClaimTypes.Email, adopter.Email),
             new(ClaimTypes.Role, "Adopter")
-        };
-
-        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        await HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            new ClaimsPrincipal(identity),
-            new AuthenticationProperties { IsPersistent = true });
-    }
-
-    private async Task SignInAdminAsync(Admin admin)
-    {
-        var claims = new List<Claim>
-        {
-            new(ClaimTypes.NameIdentifier, admin.AdminId.ToString()),
-            new(ClaimTypes.Name, admin.FullName),
-            new(ClaimTypes.Email, admin.Email),
-            new(ClaimTypes.Role, "Admin")
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

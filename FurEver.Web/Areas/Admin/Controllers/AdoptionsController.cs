@@ -17,24 +17,70 @@ public class AdoptionsController : Controller
     // GET /Admin/Adoptions
     public async Task<IActionResult> Index(string? status)
     {
-        var query = _db.Adoptions
+        var baseQuery = _db.Adoptions
             .Include(a => a.Pet)
-            .Include(a => a.Adopter)
-            .AsQueryable();
+            .Include(a => a.Adopter);
 
-        if (!string.IsNullOrWhiteSpace(status))
-            query = query.Where(a => a.Status == status);
+        var filtered = string.IsNullOrWhiteSpace(status)
+            ? baseQuery.AsQueryable()
+            : baseQuery.Where(a => a.Status == status);
 
         var model = new AdminAdoptionListViewModel
         {
-            Adoptions = await query
+            Adoptions = await filtered
                 .OrderByDescending(a => a.ApplicationDate)
                 .ThenByDescending(a => a.AdoptionId)
                 .ToListAsync(),
-            Status = status
+            Status = status,
+            TotalCount = await _db.Adoptions.CountAsync(),
+            PendingCount = await _db.Adoptions.CountAsync(a => a.Status == "Pending"),
+            CompletedCount = await _db.Adoptions.CountAsync(a => a.Status == "Completed"),
+            CancelledCount = await _db.Adoptions.CountAsync(a => a.Status == "Cancelled"),
+            ReturnedCount = await _db.Adoptions.CountAsync(a => a.Status == "Returned")
         };
 
         return View(model);
+    }
+
+    // POST /Admin/Adoptions/UpdateFee — adjust the fee on a pending application.
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateFee(int id, decimal fee)
+    {
+        var adoption = await _db.Adoptions.FirstOrDefaultAsync(a => a.AdoptionId == id);
+        if (adoption is null) return NotFound();
+
+        if (adoption.Status != "Pending")
+        {
+            TempData["Error"] = "Only pending applications can have their fee edited.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        if (fee < 0)
+        {
+            TempData["Error"] = "Adoption fee cannot be negative.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        adoption.AdoptionFee = fee;
+        await _db.SaveChangesAsync();
+
+        TempData["Success"] = "Adoption fee updated.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    // POST /Admin/Adoptions/Delete — permanently remove an adoption record.
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var adoption = await _db.Adoptions.FirstOrDefaultAsync(a => a.AdoptionId == id);
+        if (adoption is null) return NotFound();
+
+        // The adoption-delete trigger frees the pet if it was reserved/adopted.
+        _db.Adoptions.Remove(adoption);
+        await _db.SaveChangesAsync();
+
+        TempData["Success"] = "Adoption record deleted.";
+        return RedirectToAction(nameof(Index));
     }
 
     // POST /Admin/Adoptions/Approve — Pending -> Completed.

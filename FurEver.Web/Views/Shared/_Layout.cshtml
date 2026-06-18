@@ -1,9 +1,18 @@
+@{
+    var area = ViewContext.RouteData.Values["area"]?.ToString();
+    var isAdminArea = string.Equals(area, "Admin", StringComparison.OrdinalIgnoreCase);
+    var isAdmin = User.Identity?.IsAuthenticated == true && User.IsInRole("Admin");
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    string? AdminTab(string controller) => currentController == controller ? "active" : null;
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@(ViewData["Title"] is string t ? $"{t} — FurEver" : "FurEver")</title>
+    <link rel="icon" href="~/favicon.svg" type="image/svg+xml" asp-append-version="true" />
+    <link rel="alternate icon" href="~/favicon.ico" sizes="any" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Shantell+Sans:wght@500;700;800&display=swap" rel="stylesheet" />
@@ -16,8 +25,21 @@
                 <span class="brand-mark" aria-hidden="true"><partial name="_Glyph" model='"sprout"' /></span> FurEver
             </a>
             <ul class="nav-links">
-                <li><a asp-area="" asp-controller="Pets" asp-action="Index">Find a Pet</a></li>
-                <li><a asp-area="" asp-controller="VetVisits" asp-action="Index">Vet Care</a></li>
+                @if (isAdminArea && isAdmin)
+                {
+                    <li><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="@AdminTab("Dashboard")">Dashboard</a></li>
+                    <li><a asp-area="Admin" asp-controller="Pets" asp-action="Index" class="@AdminTab("Pets")">Pets</a></li>
+                    <li><a asp-area="Admin" asp-controller="Adopters" asp-action="Index" class="@AdminTab("Adopters")">Adopters</a></li>
+                    <li><a asp-area="Admin" asp-controller="Adoptions" asp-action="Index" class="@AdminTab("Adoptions")">Adoptions</a></li>
+                    <li><a asp-area="Admin" asp-controller="VetVisits" asp-action="Index" class="@AdminTab("VetVisits")">Vet Visits</a></li>
+                    <li><a asp-area="Admin" asp-controller="Vaccinations" asp-action="Index" class="@AdminTab("Vaccinations")">Vaccinations</a></li>
+                    <li><a asp-area="Admin" asp-controller="Reports" asp-action="Index" class="@AdminTab("Reports")">Reports</a></li>
+                }
+                else if (!isAdminArea)
+                {
+                    <li><a asp-area="" asp-controller="Pets" asp-action="Index">Find a Pet</a></li>
+                    <li><a asp-area="" asp-controller="VetVisits" asp-action="Index">Vet Care</a></li>
+                }
             </ul>
             <div class="nav-spacer"></div>
             <ul class="nav-links">
@@ -27,18 +49,21 @@
                     <li><a asp-area="" asp-controller="Adoptions" asp-action="Index">My Applications</a></li>
                     <li><a asp-area="" asp-controller="Account" asp-action="Profile">@User.Identity.Name</a></li>
                     <li>
-                        <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
-                            <button type="submit" class="nav-btn">Log out</button>
-                        </form>
+                        <button type="button" class="nav-btn" data-logout-open>Log out</button>
                     </li>
                 }
                 else if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
                 {
-                    <li><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Admin Dashboard</a></li>
+                    if (isAdminArea)
+                    {
+                        <li><a asp-area="" asp-controller="Home" asp-action="Index" target="_blank" rel="noopener">View site &#8599;</a></li>
+                    }
+                    else
+                    {
+                        <li><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Admin Dashboard</a></li>
+                    }
                     <li>
-                        <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
-                            <button type="submit" class="nav-btn">Log out</button>
-                        </form>
+                        <button type="button" class="nav-btn" data-logout-open>Log out</button>
                     </li>
                 }
                 else
@@ -71,7 +96,37 @@
         </div>
     </footer>
 
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <dialog id="logout-dialog" class="modal" aria-labelledby="logout-title">
+            <div class="modal-card">
+                <h2 id="logout-title" class="modal-title">Log out?</h2>
+                <p class="modal-body">You'll be signed out and need to log in again to continue.</p>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" data-logout-cancel>Stay signed in</button>
+                    <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                        <button type="submit" class="btn btn-danger">Log out</button>
+                    </form>
+                </div>
+            </div>
+        </dialog>
+    }
+
     <script src="~/js/site.js" asp-append-version="true"></script>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <script>
+            // If this authenticated page is restored from the browser's
+            // back/forward cache (e.g. pressing Back after logout), force a
+            // reload so the server's auth check runs and redirects to login.
+            window.addEventListener('pageshow', function (event) {
+                if (event.persisted ||
+                    (window.performance && window.performance.getEntriesByType('navigation')[0]?.type === 'back_forward')) {
+                    window.location.reload();
+                }
+            });
+        </script>
+    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

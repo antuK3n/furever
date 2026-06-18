@@ -1,8 +1,15 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using FurEver.Web.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// FurEver operates in the Philippines — render all currency ("C" format)
+// as Philippine Pesos (₱) regardless of the host machine's locale.
+var phCulture = new CultureInfo("en-PH");
+CultureInfo.DefaultThreadCurrentCulture = phCulture;
+CultureInfo.DefaultThreadCurrentUICulture = phCulture;
 
 builder.Services.AddControllersWithViews();
 
@@ -17,6 +24,30 @@ builder.Services
         options.AccessDeniedPath = "/Account/Login";
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
         options.SlidingExpiration = true;
+
+        // Admin URLs bounce to the admin login; everything else uses the
+        // member login. Applies to both "not signed in" and "wrong role".
+        options.Events.OnRedirectToLogin = context =>
+        {
+            if (context.Request.Path.StartsWithSegments("/Admin"))
+            {
+                var returnUrl = context.Request.Path + context.Request.QueryString;
+                context.Response.Redirect("/Admin/Login" + QueryString.Create("ReturnUrl", returnUrl));
+            }
+            else
+            {
+                context.Response.Redirect(context.RedirectUri);
+            }
+            return Task.CompletedTask;
+        };
+        options.Events.OnRedirectToAccessDenied = context =>
+        {
+            if (context.Request.Path.StartsWithSegments("/Admin"))
+                context.Response.Redirect("/Admin/Login");
+            else
+                context.Response.Redirect(context.RedirectUri);
+            return Task.CompletedTask;
+        };
     });
 
 builder.Services.AddAuthorization();
@@ -35,6 +66,20 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Prevent the browser (and its back/forward cache) from storing authenticated
+// pages. Without this, pressing Back after logout would show a cached admin
+// page. `no-store` is what disables Chrome's bfcache.
+app.Use(async (context, next) =>
+{
+    if (context.User.Identity?.IsAuthenticated == true)
+    {
+        context.Response.Headers.CacheControl = "no-store, no-cache, must-revalidate";
+        context.Response.Headers.Pragma = "no-cache";
+        context.Response.Headers.Expires = "0";
+    }
+    await next();
+});
 
 app.MapStaticAssets();
 

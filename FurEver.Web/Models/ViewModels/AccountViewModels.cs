@@ -85,4 +85,27 @@ public class ProfileViewModel
     public string ExperienceLevel { get; set; } = "First-time";
 
     public string Email { get; set; } = string.Empty;
+
+    // ----- Optional password change -----
+    [DataType(DataType.Password)]
+    [Display(Name = "Current Password")]
+    public string? CurrentPassword { get; set; }
+
+    [DataType(DataType.Password), MinLength(6)]
+    [Display(Name = "New Password")]
+    public string? NewPassword { get; set; }
+
+    [DataType(DataType.Password)]
+    [Compare(nameof(NewPassword), ErrorMessage = "Passwords do not match.")]
+    [Display(Name = "Confirm New Password")]
+    public string? ConfirmNewPassword { get; set; }
+
+    // ----- Quick stats (read-only, populated on GET) -----
+    public int TotalApplications { get; set; }
+    public int CompletedAdoptions { get; set; }
+    public int PendingApplications { get; set; }
+    public int FavoritesCount { get; set; }
+
+    public List<Adoption> RecentApplications { get; set; } = new();
+    public List<Favorite> RecentFavorites { get; set; } = new();
 }

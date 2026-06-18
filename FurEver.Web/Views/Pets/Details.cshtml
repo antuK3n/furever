@@ -62,6 +62,7 @@
                         <form asp-controller="Adoptions" asp-action="Apply" method="post">
                             <input type="hidden" name="petId" value="@pet.PetId" />
                             <button type="submit" class="btn btn-primary">Apply to adopt @pet.PetName</button>
+                            <span class="fee-note">Adoption fee: <strong>@FurEver.Web.Controllers.AdoptionsController.FlatAdoptionFee.ToString("C0")</strong></span>
                         </form>
                     }
                 }

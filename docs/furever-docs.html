@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FurEver — Project Documentation</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 20mm 16mm; }
+  :root{
+    --primary:#2f5e43; --primary-dark:#234634; --ink:#23302a; --muted:#5d6b63;
+    --accent:#c07a1e; --accent-dark:#9a5f12; --line:#d9e0db; --line-soft:#e8ede9;
+    --bg:#f7f9f6; --surface:#ffffff; --paper:#eef3ee; --success:#3f8f5e;
+    --error:#b5402e; --sky:#5b8fb0; --warning:#d8a13a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+  body{
+    font-family:"Nunito",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    color:var(--ink); margin:0; font-size:10.5pt; line-height:1.5; background:var(--surface);
+  }
+  h1,h2,h3,h4{font-family:"Shantell Sans","Nunito",sans-serif; line-height:1.15; color:var(--primary-dark);}
+  h2{font-size:19pt; margin:0 0 4pt; border-bottom:3px solid var(--accent); padding-bottom:5pt;}
+  h3{font-size:13.5pt; margin:16pt 0 5pt; color:var(--primary);}
+  h4{font-size:11pt; margin:11pt 0 3pt; color:var(--accent-dark);}
+  p{margin:0 0 7pt;}
+  code{font-family:"SF Mono",Menlo,Consolas,monospace; font-size:9pt; background:var(--paper); padding:1px 4px; border-radius:3px; color:var(--primary-dark);}
+  .muted{color:var(--muted);}
+  ul{margin:0 0 8pt; padding-left:18pt;}
+  li{margin-bottom:2.5pt;}
+
+  /* Cover */
+  .cover{
+    height:247mm; display:flex; flex-direction:column; justify-content:center;
+    background:linear-gradient(160deg,var(--primary) 0%,var(--primary-dark) 100%);
+    color:#fff; padding:0 22mm; page-break-after:always; position:relative; overflow:hidden;
+    margin:-18mm -16mm 0; padding-top:18mm;
+  }
+  .cover .mark{font-size:54pt; line-height:1;}
+  .cover h1{color:#fff; font-size:42pt; margin:6pt 0 0;}
+  .cover .tag{font-size:15pt; color:rgba(255,255,255,.9); margin-top:10pt; max-width:130mm;}
+  .cover .meta{margin-top:40pt; font-size:10.5pt; color:rgba(255,255,255,.82); border-top:2px solid rgba(255,255,255,.35); padding-top:12pt; max-width:120mm;}
+  .cover .meta b{color:#fff;}
+  .cover .blob{position:absolute; border-radius:50%; background:rgba(255,255,255,.06);}
+
+  section{page-break-before:always;}
+  section:first-of-type{page-break-before:avoid;}
+
+  .lead{font-size:11.5pt; color:var(--muted); margin-bottom:12pt;}
+
+  table{width:100%; border-collapse:collapse; margin:6pt 0 12pt; font-size:8.8pt;}
+  th,td{text-align:left; padding:4.5pt 6pt; border-bottom:1px solid var(--line); vertical-align:top;}
+  th{background:var(--paper); color:var(--primary-dark); font-weight:800; font-size:8pt; text-transform:uppercase; letter-spacing:.3px;}
+  tr:nth-child(even) td{background:#fbfcfb;}
+  td code{font-size:8pt; white-space:nowrap;}
+
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10pt;}
+  .card{background:var(--surface); border:1.5px solid var(--line); border-radius:9px; padding:10pt 12pt; margin-bottom:10pt; box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  .card h4{margin-top:0;}
+
+  .pill{display:inline-block; font-size:7.5pt; font-weight:800; color:#fff; padding:1.5px 7px; border-radius:20px; vertical-align:middle;}
+  .pill.get{background:var(--success);} .pill.post{background:var(--accent);}
+  .pill.pub{background:var(--sky);} .pill.adopter{background:var(--primary);} .pill.admin{background:var(--error);}
+
+  .swatch-row{display:flex; flex-wrap:wrap; gap:8pt; margin:8pt 0 14pt;}
+  .swatch{width:74pt; text-align:center; font-size:7.5pt;}
+  .swatch .chip{height:42pt; border-radius:7px; border:1px solid rgba(0,0,0,.08); margin-bottom:3pt;}
+  .swatch b{display:block; font-size:8pt;}
+  .swatch .hex{color:var(--muted); font-family:monospace; font-size:7pt;}
+
+  .kvs{font-size:9pt;}
+  .kvs td:first-child{font-weight:700; color:var(--primary-dark); width:36%; white-space:nowrap;}
+
+  .note{background:var(--paper); border-left:4px solid var(--accent); padding:8pt 11pt; border-radius:0 7px 7px 0; margin:8pt 0 12pt; font-size:9.5pt;}
+  .toc ol{font-size:11pt; line-height:2; padding-left:20pt;}
+  .toc a{color:var(--primary-dark); text-decoration:none;}
+  .erd{font-family:"SF Mono",Menlo,Consolas,monospace; font-size:8.5pt; background:var(--primary-dark); color:#dfeee5; padding:12pt; border-radius:9px; white-space:pre; line-height:1.45; overflow:hidden;}
+  .tag-chip{display:inline-block; background:var(--paper); border:1px solid var(--line); border-radius:6px; padding:2pt 7pt; font-size:8.5pt; margin:0 4pt 5pt 0; font-weight:700; color:var(--primary-dark);}
+</style>
+</head>
+<body>
+
+<!-- ================= COVER ================= -->
+<div class="cover">
+  <div class="blob" style="width:240mm;height:240mm;right:-120mm;top:-90mm;"></div>
+  <div class="blob" style="width:120mm;height:120mm;left:-60mm;bottom:-50mm;"></div>
+  <div style="position:relative;">
+    <div class="mark">&#127968;</div>
+    <h1>FurEver</h1>
+    <div class="tag">Pet adoption &amp; shelter management platform — full technical documentation.</div>
+    <div class="meta">
+      <div><b>Project type:</b> Database systems final project — ASP.NET Core MVC web application</div>
+      <div><b>Stack:</b> .NET&nbsp;10 &middot; EF Core 10 &middot; SQL Server (Docker) &middot; cookie auth</div>
+      <div><b>Document:</b> Architecture, database design, feature set &amp; design system</div>
+      <div><b>Generated:</b> June 2026</div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= TOC ================= -->
+<section>
+  <h2>Contents</h2>
+  <div class="toc">
+    <ol>
+      <li>Project Overview</li>
+      <li>Technology Stack</li>
+      <li>Application Architecture</li>
+      <li>Database Design &mdash; Tables &amp; Schema</li>
+      <li>Database Logic &mdash; Triggers, Procedures &amp; Constraints</li>
+      <li>Feature Set by Role</li>
+      <li>Routes &amp; Controllers</li>
+      <li>Design System &mdash; Color, Type &amp; UI</li>
+    </ol>
+  </div>
+
+  <h3>1. Project Overview</h3>
+  <p class="lead">FurEver is a full-stack pet-adoption web application that doubles as a shelter management system. It lets the public browse adoptable animals and read each pet's medical history, lets registered adopters favorite pets and submit adoption applications, and gives shelter staff a complete administrative back office for managing pets, adoptions, adopters, veterinary records, vaccinations, and reporting.</p>
+  <p>The system is built around a relational SQL Server database whose integrity is enforced not only by the application but by database-level <b>triggers</b>, <b>stored procedures</b>, and <b>check constraints</b>. The core domain workflow &mdash; a pet moving from <i>Available</i> to <i>Reserved</i> to <i>Adopted</i> &mdash; is driven automatically by triggers on the Adoption table, so the data can never fall out of sync regardless of how a record is changed.</p>
+  <div class="note"><b>Design intent:</b> the front end uses a deliberately warm, "handmade" visual identity &mdash; forest-green and crayon-box accents on a paper background, rounded display type, and soft sticker-style shadows &mdash; to make a shelter feel approachable rather than clinical.</div>
+</section>
+
+<!-- ================= TECH STACK ================= -->
+<section>
+  <h2>2. Technology Stack</h2>
+  <table class="kvs">
+    <tr><td>Runtime / Framework</td><td>.NET 10 &mdash; ASP.NET Core MVC (<code>Microsoft.NET.Sdk.Web</code>)</td></tr>
+    <tr><td>Language</td><td>C# with nullable reference types and implicit usings enabled</td></tr>
+    <tr><td>ORM</td><td>Entity Framework Core 10.0.9 (SQL Server provider)</td></tr>
+    <tr><td>Database</td><td>Microsoft SQL Server 2022, running in Docker (container <code>furever-sql</code>)</td></tr>
+    <tr><td>Authentication</td><td>ASP.NET Core cookie authentication (7-day sliding expiration)</td></tr>
+    <tr><td>Password hashing</td><td>BCrypt.Net-Next 4.2.0 (work factor 10)</td></tr>
+    <tr><td>View layer</td><td>Razor views (<code>.cshtml</code>) + tag helpers; MVC Areas for admin</td></tr>
+    <tr><td>Client libraries</td><td>Bootstrap, jQuery, jQuery-validation (unobtrusive)</td></tr>
+    <tr><td>Typography</td><td>Google Fonts &mdash; Nunito (body) + Shantell Sans (display)</td></tr>
+    <tr><td>File storage</td><td>Pet photos on disk in <code>wwwroot/uploads/</code></td></tr>
+  </table>
+
+  <h4>NuGet packages</h4>
+  <span class="tag-chip">BCrypt.Net-Next 4.2.0</span>
+  <span class="tag-chip">Microsoft.EntityFrameworkCore.SqlServer 10.0.9</span>
+
+  <h4>Notable migration note</h4>
+  <p>The schema was ported from an original MySQL design to SQL Server. Two MySQL features were re-implemented: the daily <i>EVENT</i> that flagged overdue vaccinations became the stored procedure <code>sp_update_overdue_vaccinations</code> (invoked at app startup and before vaccination queries, since SQL Server Express in Docker has no SQL Agent), and EF Core is explicitly told about the table triggers so it uses a save strategy that avoids the <code>OUTPUT</code> clause.</p>
+</section>
+
+<!-- ================= ARCHITECTURE ================= -->
+<section>
+  <h2>3. Application Architecture</h2>
+  <p>Standard ASP.NET Core MVC layering with a clean separation between the public site and the admin back office (implemented as an MVC <b>Area</b>).</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h4>Request pipeline (Program.cs)</h4>
+      <ul>
+        <li>HTTPS redirection + HSTS (production)</li>
+        <li>Static files &amp; mapped static assets</li>
+        <li>Routing &rarr; Authentication &rarr; Authorization</li>
+        <li>Two route maps: <code>{area}/{controller}/{action}</code> and the default <code>{controller=Home}/{action=Index}</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Startup tasks</h4>
+      <ul>
+        <li>Seeds a default admin (<code>admin@furever.com</code>) if none exists, hashing the password in C# with BCrypt</li>
+        <li>Executes <code>sp_update_overdue_vaccinations</code> to refresh vaccination statuses</li>
+        <li>Both wrapped in try/catch so the app still boots if the DB is not yet ready</li>
+      </ul>
+    </div>
+  </div>
+
+  <h4>Authentication &amp; authorization model</h4>
+  <p>Authentication is cookie-based. There are <b>two separate identity tables</b> &mdash; <code>Adopter</code> and <code>Admin</code> &mdash; and the login action checks both. Authorization is role-based via claims: routes are guarded with <code>[Authorize(Roles = "Adopter")]</code> or <code>[Authorize(Roles = "Admin")]</code>. Admins are redirected to the dashboard on login; the entire <code>Admin</code> area requires the Admin role.</p>
+
+  <h4>Project layout</h4>
+  <table>
+    <tr><th>Path</th><th>Responsibility</th></tr>
+    <tr><td><code>Models/</code></td><td>EF Core entities (7) + view models (Account, Pet, Admin)</td></tr>
+    <tr><td><code>Data/FurEverContext.cs</code></td><td>DbContext: DbSets, unique indexes, trigger registration</td></tr>
+    <tr><td><code>Controllers/</code></td><td>Public + adopter controllers (Home, Account, Pets, Adoptions, Favorites, VetVisits)</td></tr>
+    <tr><td><code>Areas/Admin/</code></td><td>Admin back office (Dashboard, Pets, Adoptions, Adopters, VetVisits, Vaccinations, Reports)</td></tr>
+    <tr><td><code>Views/</code></td><td>Razor views + shared partials (_Layout, _PetCard, _Glyph)</td></tr>
+    <tr><td><code>wwwroot/</code></td><td>site.css design system, JS, client libs, uploaded pet photos</td></tr>
+    <tr><td><code>database/</code></td><td><code>01_schema.sql</code> (DDL + triggers + procs), <code>02_seed.sql</code> (sample data)</td></tr>
+  </table>
+</section>
+
+<!-- ================= DATABASE TABLES ================= -->
+<section>
+  <h2>4. Database Design &mdash; Tables &amp; Schema</h2>
+  <p>The <code>FurEver</code> database has <b>7 tables</b>. Column names use a <code>Name_With_Underscores</code> convention in SQL and are mapped to PascalCase C# properties via <code>[Column]</code> attributes.</p>
+
+  <h4>Entity relationships</h4>
+  <div class="erd">Admin                         (standalone — staff logins)
+
+Adopter ──┬─< Favorite >─┬── Pet ──< Veterinary_Visit ──< Vaccination
+          │              │
+          └─< Adoption >──┘
+
+  one ── many (<)        unique(Adopter_ID, Pet_ID) on Favorite</div>
+  <p class="muted" style="font-size:8.5pt;">A Pet has many Adoptions, Favorites and Veterinary Visits. An Adopter has many Adoptions and Favorites. Each Veterinary Visit has many Vaccinations. Favorite is the join table between Adopter and Pet with a uniqueness rule so a pet can be favorited only once per adopter.</p>
+
+  <h3>4.1 Pet</h3>
+  <p class="muted">Table <code>Pet</code> — the adoptable animals. Indexed on Status, Species, Date_Arrived.</p>
+  <table>
+    <tr><th>Column</th><th>Type</th><th>Rules</th></tr>
+    <tr><td><code>Pet_ID</code></td><td>int identity</td><td>Primary key</td></tr>
+    <tr><td><code>Pet_Name</code></td><td>nvarchar(50)</td><td>Required</td></tr>
+    <tr><td><code>Species</code></td><td>nvarchar(30)</td><td>Required (Dog, Cat, Rabbit, Bird…)</td></tr>
+    <tr><td><code>Breed</code></td><td>nvarchar(50)</td><td>Required</td></tr>
+    <tr><td><code>Age</code></td><td>nvarchar(20)</td><td>Required (free text, e.g. "2 years")</td></tr>
+    <tr><td><code>Gender</code></td><td>nvarchar(10)</td><td>CHECK: Male / Female</td></tr>
+    <tr><td><code>Color</code></td><td>nvarchar(50)</td><td>Required</td></tr>
+    <tr><td><code>Date_Arrived</code></td><td>date</td><td>Required</td></tr>
+    <tr><td><code>Spayed_Neutered</code></td><td>nvarchar(3)</td><td>CHECK: Yes / No (default No)</td></tr>
+    <tr><td><code>Temperament</code></td><td>nvarchar(100)</td><td>Required</td></tr>
+    <tr><td><code>Special_Needs</code></td><td>nvarchar(max)</td><td>Nullable</td></tr>
+    <tr><td><code>Photo_URL</code></td><td>nvarchar(255)</td><td>Nullable</td></tr>
+    <tr><td><code>Status</code></td><td>nvarchar(20)</td><td>CHECK: Available / Adopted / Reserved / Medical Hold (default Available)</td></tr>
+  </table>
+
+  <h3>4.2 Adopter</h3>
+  <p class="muted">Table <code>Adopter</code> — registered users who can favorite and apply. Unique index on Email.</p>
+  <table>
+    <tr><th>Column</th><th>Type</th><th>Rules</th></tr>
+    <tr><td><code>Adopter_ID</code></td><td>int identity</td><td>Primary key</td></tr>
+    <tr><td><code>Email</code></td><td>nvarchar(100)</td><td>Required, unique, email format</td></tr>
+    <tr><td><code>Password_Hash</code></td><td>nvarchar(255)</td><td>Required (BCrypt)</td></tr>
+    <tr><td><code>Full_Name</code></td><td>nvarchar(100)</td><td>Required</td></tr>
+    <tr><td><code>Contact_No</code></td><td>nvarchar(15)</td><td>Required</td></tr>
+    <tr><td><code>Address</code></td><td>nvarchar(200)</td><td>Required</td></tr>
+    <tr><td><code>Housing_Type</code></td><td>nvarchar(20)</td><td>CHECK: House / Apartment / Condo / Farm</td></tr>
+    <tr><td><code>Has_Other_Pets</code></td><td>nvarchar(3)</td><td>CHECK: Yes / No</td></tr>
+    <tr><td><code>Has_Children</code></td><td>nvarchar(3)</td><td>CHECK: Yes / No</td></tr>
+    <tr><td><code>Experience_Level</code></td><td>nvarchar(20)</td><td>CHECK: First-time / Experienced</td></tr>
+  </table>
+
+  <h3>4.3 Adoption</h3>
+  <p class="muted">Table <code>Adoption</code> — applications &amp; completed adoptions. Carries four triggers. Indexed on Status, Pet_ID, Adopter_ID, dates.</p>
+  <table>
+    <tr><th>Column</th><th>Type</th><th>Rules</th></tr>
+    <tr><td><code>Adoption_ID</code></td><td>int identity</td><td>Primary key</td></tr>
+    <tr><td><code>Pet_ID</code></td><td>int</td><td>FK &rarr; Pet (ON DELETE CASCADE)</td></tr>
+    <tr><td><code>Adopter_ID</code></td><td>int</td><td>FK &rarr; Adopter (ON DELETE CASCADE)</td></tr>
+    <tr><td><code>Application_Date</code></td><td>date</td><td>Defaults to today</td></tr>
+    <tr><td><code>Adoption_Date</code></td><td>date</td><td>Nullable — auto-set by trigger on completion</td></tr>
+    <tr><td><code>Adoption_Fee</code></td><td>decimal(10,2)</td><td>Nullable — set by admin at approval</td></tr>
+    <tr><td><code>Contract_Signed</code></td><td>nvarchar(3)</td><td>CHECK: Yes / No — auto-Yes on completion</td></tr>
+    <tr><td><code>Status</code></td><td>nvarchar(20)</td><td>CHECK: Completed / Pending / Returned / Cancelled (default Pending)</td></tr>
+  </table>
+
+  <h3>4.4 Veterinary_Visit</h3>
+  <p class="muted">Table <code>Veterinary_Visit</code> — medical record per pet. Indexed on Pet_ID.</p>
+  <table>
+    <tr><th>Column</th><th>Type</th><th>Rules</th></tr>
+    <tr><td><code>Visit_ID</code></td><td>int identity</td><td>Primary key</td></tr>
+    <tr><td><code>Pet_ID</code></td><td>int</td><td>FK &rarr; Pet (ON DELETE CASCADE)</td></tr>
+    <tr><td><code>Visit_Date</code></td><td>date</td><td>Required</td></tr>
+    <tr><td><code>Veterinarian_Name</code></td><td>nvarchar(100)</td><td>Required</td></tr>
+    <tr><td><code>Visit_Type</code></td><td>nvarchar(20)</td><td>CHECK: Checkup / Vaccination / Surgery / Treatment / Emergency</td></tr>
+    <tr><td><code>Weight</code></td><td>decimal(5,2)</td><td>Nullable (kg)</td></tr>
+    <tr><td><code>Temperature</code></td><td>decimal(4,2)</td><td>Nullable (&deg;C)</td></tr>
+    <tr><td><code>Diagnosis</code></td><td>nvarchar(max)</td><td>Nullable</td></tr>
+    <tr><td><code>General_Notes</code></td><td>nvarchar(max)</td><td>Nullable</td></tr>
+    <tr><td><code>Procedure_Cost</code></td><td>decimal(10,2)</td><td>Required</td></tr>
+    <tr><td><code>Next_Visit_Date</code></td><td>date</td><td>Nullable</td></tr>
+  </table>
+
+  <h3>4.5 Vaccination</h3>
+  <p class="muted">Table <code>Vaccination</code> — vaccine doses tied to a vet visit. Indexed on Status, Next_Due_Date.</p>
+  <table>
+    <tr><th>Column</th><th>Type</th><th>Rules</th></tr>
+    <tr><td><code>Vaccination_ID</code></td><td>int identity</td><td>Primary key</td></tr>
+    <tr><td><code>Visit_ID</code></td><td>int</td><td>FK &rarr; Veterinary_Visit (ON DELETE CASCADE)</td></tr>
+    <tr><td><code>Vaccine_Name</code></td><td>nvarchar(100)</td><td>Required</td></tr>
+    <tr><td><code>Date_Administered</code></td><td>date</td><td>Nullable</td></tr>
+    <tr><td><code>Administered_By</code></td><td>nvarchar(100)</td><td>Nullable</td></tr>
+    <tr><td><code>Manufacturer</code></td><td>nvarchar(50)</td><td>Nullable</td></tr>
+    <tr><td><code>Next_Due_Date</code></td><td>date</td><td>Nullable — drives Overdue logic</td></tr>
+    <tr><td><code>Site</code></td><td>nvarchar(50)</td><td>Nullable (injection site)</td></tr>
+    <tr><td><code>Reaction</code></td><td>nvarchar(max)</td><td>Nullable</td></tr>
+    <tr><td><code>Status</code></td><td>nvarchar(20)</td><td>CHECK: Completed / Scheduled / Overdue (default Scheduled)</td></tr>
+    <tr><td><code>Cost</code></td><td>decimal(10,2)</td><td>Nullable</td></tr>
+  </table>
+
+  <h3>4.6 Favorite &amp; 4.7 Admin</h3>
+  <div class="grid2">
+    <div class="card">
+      <h4>Favorite</h4>
+      <p class="muted" style="font-size:8.5pt;">Join table (Adopter &harr; Pet). Unique on (Adopter_ID, Pet_ID).</p>
+      <table style="font-size:8pt;">
+        <tr><td><code>Favorite_ID</code></td><td>int PK</td></tr>
+        <tr><td><code>Adopter_ID</code></td><td>FK, cascade</td></tr>
+        <tr><td><code>Pet_ID</code></td><td>FK, cascade</td></tr>
+        <tr><td><code>Date_Added</code></td><td>datetime2</td></tr>
+        <tr><td><code>Notes</code></td><td>nullable text</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h4>Admin</h4>
+      <p class="muted" style="font-size:8.5pt;">Staff accounts. Unique on Email. Seeded on startup.</p>
+      <table style="font-size:8pt;">
+        <tr><td><code>Admin_ID</code></td><td>int PK</td></tr>
+        <tr><td><code>Email</code></td><td>unique, required</td></tr>
+        <tr><td><code>Password_Hash</code></td><td>BCrypt</td></tr>
+        <tr><td><code>Full_Name</code></td><td>required</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DB LOGIC ================= -->
+<section>
+  <h2>5. Database Logic</h2>
+  <p>Business rules live in the database itself so the data stays consistent no matter the entry path. This is the heart of the project's database-systems focus.</p>
+
+  <h3>5.1 Triggers (on the Adoption &amp; Pet tables)</h3>
+  <table>
+    <tr><th>Trigger</th><th>Event</th><th>What it does</th></tr>
+    <tr><td><code>trg_adoption_validate_insert</code></td><td>AFTER INSERT</td><td>Rejects (error 50001) an application unless the pet is <i>Available</i>; if created directly as Completed, auto-fills Adoption_Date and Contract_Signed. Runs first.</td></tr>
+    <tr><td><code>trg_adoption_after_insert</code></td><td>AFTER INSERT</td><td>Moves the pet to <i>Reserved</i> (Pending) or <i>Adopted</i> (Completed) so it can't be double-booked.</td></tr>
+    <tr><td><code>trg_adoption_after_update</code></td><td>AFTER UPDATE</td><td>On transition to Completed, fills Adoption_Date / Contract_Signed; syncs Pet.Status: Completed&rarr;Adopted, Pending&rarr;Reserved, Returned/Cancelled&rarr;Available.</td></tr>
+    <tr><td><code>trg_adoption_after_delete</code></td><td>AFTER DELETE</td><td>If a reserved/adopted pet's adoption row is deleted, returns the pet to <i>Available</i>.</td></tr>
+    <tr><td><code>trg_pet_cleanup_favorites</code></td><td>AFTER UPDATE (Pet)</td><td>When a pet becomes <i>Adopted</i>, clears it from every adopter's favorites.</td></tr>
+  </table>
+
+  <h3>5.2 Stored procedures</h3>
+  <table>
+    <tr><th>Procedure</th><th>Parameters</th><th>Purpose</th></tr>
+    <tr><td><code>sp_get_available_pets_by_species</code></td><td>@p_species</td><td>Returns available pets of one species, newest arrivals first.</td></tr>
+    <tr><td><code>sp_monthly_adoption_stats</code></td><td>@p_year, @p_month</td><td>Aggregates a month: total/completed/pending/cancelled/returned counts + total revenue. Powers the admin report.</td></tr>
+    <tr><td><code>sp_update_overdue_vaccinations</code></td><td>—</td><td>Flips Scheduled vaccinations to Overdue when Next_Due_Date has passed. Runs at startup and before vaccination listings.</td></tr>
+  </table>
+
+  <h3>5.3 Check constraints (enumerations enforced in SQL)</h3>
+  <table>
+    <tr><th>Table</th><th>Column</th><th>Allowed values</th></tr>
+    <tr><td>Pet</td><td>Gender</td><td>Male, Female</td></tr>
+    <tr><td>Pet</td><td>Spayed_Neutered</td><td>Yes, No</td></tr>
+    <tr><td>Pet</td><td>Status</td><td>Available, Adopted, Reserved, Medical Hold</td></tr>
+    <tr><td>Adopter</td><td>Housing_Type</td><td>House, Apartment, Condo, Farm</td></tr>
+    <tr><td>Adopter</td><td>Has_Other_Pets / Has_Children</td><td>Yes, No</td></tr>
+    <tr><td>Adopter</td><td>Experience_Level</td><td>First-time, Experienced</td></tr>
+    <tr><td>Adoption</td><td>Status</td><td>Completed, Pending, Returned, Cancelled</td></tr>
+    <tr><td>Adoption</td><td>Contract_Signed</td><td>Yes, No</td></tr>
+    <tr><td>Veterinary_Visit</td><td>Visit_Type</td><td>Checkup, Vaccination, Surgery, Treatment, Emergency</td></tr>
+    <tr><td>Vaccination</td><td>Status</td><td>Completed, Scheduled, Overdue</td></tr>
+  </table>
+
+  <div class="note"><b>The adoption lifecycle, end-to-end:</b> an adopter applies &rarr; <code>validate_insert</code> confirms the pet is free &rarr; <code>after_insert</code> reserves the pet. An admin approves &rarr; <code>after_update</code> stamps the adoption date, marks the contract signed, sets the pet to Adopted, and <code>cleanup_favorites</code> removes it from everyone's wishlists. If the admin rejects, or the adoption is later returned, the pet flows back to Available automatically.</div>
+</section>
+
+<!-- ================= FEATURES ================= -->
+<section>
+  <h2>6. Feature Set by Role</h2>
+
+  <h3>Public visitor <span class="pill pub">no login</span></h3>
+  <ul>
+    <li>Home page with most-favorited pets and newest arrivals</li>
+    <li>Browse all available pets; filter by species; search by name, breed, or temperament</li>
+    <li>Pet detail page with photo, traits, special needs, and full medical history</li>
+    <li>Public veterinary-visit transparency log (visits + vaccinations on record)</li>
+    <li>Register an adopter account; log in</li>
+  </ul>
+
+  <h3>Registered adopter <span class="pill adopter">role: Adopter</span></h3>
+  <ul>
+    <li>Favorite / un-favorite pets and attach private notes</li>
+    <li>Submit an adoption application for an available pet (duplicates prevented)</li>
+    <li>Track application status (Pending / Completed / Cancelled / Returned)</li>
+    <li>Cancel one's own pending applications</li>
+    <li>Edit profile: contact, address, housing, other pets, children, experience</li>
+  </ul>
+
+  <h3>Administrator <span class="pill admin">role: Admin</span></h3>
+  <div class="grid2">
+    <div class="card"><h4>Dashboard</h4><p style="font-size:9pt;margin:0;">KPI tiles (available / reserved / adopted / medical-hold pets, total adopters, pending applications, overdue vaccinations), recent applications, upcoming vet visits.</p></div>
+    <div class="card"><h4>Pets</h4><p style="font-size:9pt;margin:0;">Full CRUD, status control, photo upload (JPEG/PNG/GIF/WebP, max 5&nbsp;MB) with old-file cleanup.</p></div>
+    <div class="card"><h4>Adoptions</h4><p style="font-size:9pt;margin:0;">Review all applications; Approve (set fee), Reject, or mark Returned — each driving the trigger-based status flow.</p></div>
+    <div class="card"><h4>Adopters</h4><p style="font-size:9pt;margin:0;">Search adopters; view a profile with all their applications and favorited pets.</p></div>
+    <div class="card"><h4>Vet visits &amp; vaccinations</h4><p style="font-size:9pt;margin:0;">CRUD vet visits with vitals/cost/follow-ups; manage vaccinations with auto-overdue tracking.</p></div>
+    <div class="card"><h4>Reports</h4><p style="font-size:9pt;margin:0;">Monthly adoption statistics &amp; revenue (via stored procedure) plus species inventory breakdown.</p></div>
+  </div>
+</section>
+
+<!-- ================= ROUTES ================= -->
+<section>
+  <h2>7. Routes &amp; Controllers</h2>
+  <h4>Public &amp; adopter controllers</h4>
+  <table>
+    <tr><th>Route</th><th>Verb</th><th>Access</th><th>Purpose</th></tr>
+    <tr><td><code>/</code> Home/Index</td><td><span class="pill get">GET</span></td><td>Public</td><td>Featured + new pets</td></tr>
+    <tr><td>/Pets/Index</td><td><span class="pill get">GET</span></td><td>Public</td><td>Browse + filter + search</td></tr>
+    <tr><td>/Pets/Details/{id}</td><td><span class="pill get">GET</span></td><td>Public</td><td>Pet profile + medical history</td></tr>
+    <tr><td>/VetVisits/Index</td><td><span class="pill get">GET</span></td><td>Public</td><td>Transparency log</td></tr>
+    <tr><td>/Account/Register</td><td><span class="pill get">GET</span> <span class="pill post">POST</span></td><td>Public</td><td>Adopter sign-up</td></tr>
+    <tr><td>/Account/Login</td><td><span class="pill get">GET</span> <span class="pill post">POST</span></td><td>Public</td><td>Auth (Adopter or Admin)</td></tr>
+    <tr><td>/Account/Logout</td><td><span class="pill post">POST</span></td><td>Auth</td><td>Sign out</td></tr>
+    <tr><td>/Account/Profile</td><td><span class="pill get">GET</span> <span class="pill post">POST</span></td><td>Adopter</td><td>View / edit profile</td></tr>
+    <tr><td>/Adoptions/Index</td><td><span class="pill get">GET</span></td><td>Adopter</td><td>My applications</td></tr>
+    <tr><td>/Adoptions/Apply</td><td><span class="pill post">POST</span></td><td>Adopter</td><td>Submit application</td></tr>
+    <tr><td>/Adoptions/Cancel</td><td><span class="pill post">POST</span></td><td>Adopter</td><td>Cancel pending</td></tr>
+    <tr><td>/Favorites/Index</td><td><span class="pill get">GET</span></td><td>Adopter</td><td>Saved pets</td></tr>
+    <tr><td>/Favorites/Add · Remove · UpdateNotes</td><td><span class="pill post">POST</span></td><td>Adopter</td><td>Manage favorites</td></tr>
+  </table>
+
+  <h4>Admin area controllers <span class="pill admin">all require Admin role</span></h4>
+  <table>
+    <tr><th>Controller</th><th>Actions</th></tr>
+    <tr><td>Dashboard</td><td>Index (KPIs)</td></tr>
+    <tr><td>Pets</td><td>Index, Create, Edit, Delete</td></tr>
+    <tr><td>Adoptions</td><td>Index, Approve, Reject, Return</td></tr>
+    <tr><td>Adopters</td><td>Index, Details</td></tr>
+    <tr><td>VetVisits</td><td>Index, Details, Create, Edit, Delete</td></tr>
+    <tr><td>Vaccinations</td><td>Index, Create, Edit, Delete</td></tr>
+    <tr><td>Reports</td><td>Index (monthly stats by year/month)</td></tr>
+  </table>
+</section>
+
+<!-- ================= DESIGN SYSTEM ================= -->
+<section>
+  <h2>8. Design System</h2>
+  <p class="lead">A warm "handmade" identity: forest green with crayon-box accents on a soft paper background, rounded display type, hand-cut (slightly irregular) border radii, and soft sticker-style shadows. Every pet now has a real photograph.</p>
+
+  <h3>8.1 Color palette</h3>
+  <p class="muted" style="font-size:8.5pt;">Defined as <code>oklch()</code> custom properties in <code>site.css</code>. Approximate hex shown for reference.</p>
+  <div class="swatch-row">
+    <div class="swatch"><div class="chip" style="background:#2f5e43;"></div><b>Primary</b><span class="hex">forest green</span></div>
+    <div class="swatch"><div class="chip" style="background:#234634;"></div><b>Primary dark</b><span class="hex">press/border</span></div>
+    <div class="swatch"><div class="chip" style="background:#c07a1e;"></div><b>Accent</b><span class="hex">amber/orange</span></div>
+    <div class="swatch"><div class="chip" style="background:#23302a;"></div><b>Ink</b><span class="hex">body text</span></div>
+    <div class="swatch"><div class="chip" style="background:#5d6b63;"></div><b>Muted</b><span class="hex">secondary text</span></div>
+    <div class="swatch"><div class="chip" style="background:#f7f9f6;border:1px solid #ddd;"></div><b>Background</b><span class="hex">paper</span></div>
+  </div>
+  <div class="swatch-row">
+    <div class="swatch"><div class="chip" style="background:#3f8f5e;"></div><b>Success</b><span class="hex">available</span></div>
+    <div class="swatch"><div class="chip" style="background:#d8a13a;"></div><b>Warning</b><span class="hex">pending</span></div>
+    <div class="swatch"><div class="chip" style="background:#b5402e;"></div><b>Error</b><span class="hex">overdue/cancel</span></div>
+    <div class="swatch"><div class="chip" style="background:#5b8fb0;"></div><b>Sky</b><span class="hex">accent 2</span></div>
+    <div class="swatch"><div class="chip" style="background:#d98b53;"></div><b>Coral</b><span class="hex">hearts</span></div>
+    <div class="swatch"><div class="chip" style="background:#eef3ee;border:1px solid #ddd;"></div><b>Paper tint</b><span class="hex">surfaces</span></div>
+  </div>
+  <p style="font-size:9pt;">Status badges map directly to these tokens: <b>Available</b>&rarr;success green, <b>Pending/Reserved</b>&rarr;warning amber, <b>Adopted/Completed</b>&rarr;primary green, <b>Cancelled/Overdue/Rejected</b>&rarr;error red, <b>Medical Hold</b>&rarr;accent, neutral states&rarr;muted grey.</p>
+
+  <h3>8.2 Typography</h3>
+  <table class="kvs">
+    <tr><td>Display / headings</td><td><b>Shantell Sans</b> — rounded, hand-drawn marker feel (weights 500/700/800)</td></tr>
+    <tr><td>Body / UI</td><td><b>Nunito</b> — rounded humanist sans (weights 400/600/700/800)</td></tr>
+    <tr><td>Scale</td><td>Fluid <code>clamp()</code> steps from xs (~0.8rem) to 4xl (~3.4rem)</td></tr>
+    <tr><td>Headings accent</td><td>Hand-drawn amber "crayon underline" SVG beneath H1 and section titles</td></tr>
+  </table>
+
+  <h3>8.3 UI components &amp; motifs</h3>
+  <div class="grid2">
+    <div class="card"><h4>Buttons</h4><p style="font-size:9pt;margin:0;">Pill shapes with an offset "drop" shadow that collapses on press. Variants: primary (green), accent (amber), secondary (outline), danger (red).</p></div>
+    <div class="card"><h4>Pet cards</h4><p style="font-size:9pt;margin:0;">4:3 photo, status badge overlay, favorite count, name + meta line (breed · age · gender) and a one-line temperament note. Lift on hover.</p></div>
+    <div class="card"><h4>Surfaces</h4><p style="font-size:9pt;margin:0;">White cards with subtly irregular ("hand-cut") border radii, 2px soft borders, and offset sticker shadows on a paper-grain background.</p></div>
+    <div class="card"><h4>Identity details</h4><p style="font-size:9pt;margin:0;">Torn-paper edges on header/footer, hand-drawn SVG glyph set (dog, cat, rabbit, bird, heart…), forest-green sticky nav.</p></div>
+  </div>
+
+  <h3>8.4 Accessibility &amp; polish</h3>
+  <ul>
+    <li>Status colors meet contrast targets against their backgrounds; white focus ring on dark green surfaces, accent ring elsewhere</li>
+    <li><code>prefers-reduced-motion</code> respected — transitions and smooth scroll disabled</li>
+    <li>Full interactive-state coverage on inputs (focus rings) and buttons (hover / active / disabled)</li>
+    <li>Semantic HTML with descriptive <code>alt</code> text on every pet photo; lazy-loaded images</li>
+  </ul>
+</section>
+
+</body>
+</html>

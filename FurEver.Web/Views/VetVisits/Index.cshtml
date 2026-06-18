@@ -50,6 +50,21 @@
                     </h4>
                     <span class="muted text-sm">@visit.VisitDate.ToString("MMM d, yyyy") &middot; @visit.VeterinarianName</span>
                 </div>
+                <ul class="visit-meta">
+                    @if (visit.Weight.HasValue)
+                    {
+                        <li><span class="label">Weight</span> @visit.Weight kg</li>
+                    }
+                    @if (visit.Temperature.HasValue)
+                    {
+                        <li><span class="label">Temp</span> @visit.Temperature&deg;C</li>
+                    }
+                    <li><span class="label">Cost</span> @visit.ProcedureCost.ToString("C")</li>
+                    @if (visit.NextVisitDate.HasValue)
+                    {
+                        <li><span class="label">Next visit</span> @visit.NextVisitDate.Value.ToString("MMM d, yyyy")</li>
+                    }
+                </ul>
                 @if (!string.IsNullOrWhiteSpace(visit.Diagnosis))
                 {
                     <p class="mb-0 mt-2"><strong>Diagnosis:</strong> @visit.Diagnosis</p>

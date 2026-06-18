@@ -3,9 +3,83 @@
     ViewData["Title"] = "My Profile";
 }
 
+<div class="section">
+    <div class="profile-head">
+        <h1 class="mb-0">My profile</h1>
+        <p class="muted">Signed in as <strong>@Model.Email</strong></p>
+    </div>
+
+    <div class="stat-grid mt-3">
+        <div class="stat-card">
+            <span class="stat-value">@Model.TotalApplications</span>
+            <span class="stat-label">Applications</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value">@Model.PendingApplications</span>
+            <span class="stat-label">Pending</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value">@Model.CompletedAdoptions</span>
+            <span class="stat-label">Adoptions</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value">@Model.FavoritesCount</span>
+            <span class="stat-label">Favorites</span>
+        </div>
+    </div>
+</div>
+
+<div class="profile-layout">
+    <section class="section" aria-labelledby="recent-apps-heading">
+        <div class="row">
+            <h2 id="recent-apps-heading" class="mb-0">Recent applications</h2>
+            <a class="btn btn-secondary btn-sm" asp-controller="Adoptions" asp-action="Index">View all</a>
+        </div>
+        @if (Model.RecentApplications.Count > 0)
+        {
+            <ul class="vax-list mt-2">
+                @foreach (var a in Model.RecentApplications)
+                {
+                    <li>
+                        <a asp-controller="Pets" asp-action="Details" asp-route-id="@a.PetId"><strong>@a.Pet?.PetName</strong></a>
+                        <span class="badge badge-@a.Status.ToLower()">@a.Status</span>
+                        <span class="muted">applied @a.ApplicationDate.ToString("MMM d, yyyy")</span>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="muted mt-2">No applications yet.</p>
+        }
+    </section>
+
+    <section class="section" aria-labelledby="recent-favs-heading">
+        <div class="row">
+            <h2 id="recent-favs-heading" class="mb-0">Recent favorites</h2>
+            <a class="btn btn-secondary btn-sm" asp-controller="Favorites" asp-action="Index">View all</a>
+        </div>
+        @if (Model.RecentFavorites.Count > 0)
+        {
+            <ul class="vax-list mt-2">
+                @foreach (var f in Model.RecentFavorites)
+                {
+                    <li>
+                        <a asp-controller="Pets" asp-action="Details" asp-route-id="@f.PetId"><strong>@f.Pet?.PetName</strong></a>
+                        <span class="muted">@f.Pet?.Breed &middot; added @f.DateAdded.ToString("MMM d, yyyy")</span>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="muted mt-2">No favorites yet.</p>
+        }
+    </section>
+</div>
+
 <div class="auth-card wide">
-    <h1>My profile</h1>
-    <p class="muted">Signed in as <strong>@Model.Email</strong></p>
+    <h2>Edit details</h2>
 
     <form asp-action="Profile" method="post">
         <div asp-validation-summary="ModelOnly"></div>
@@ -67,6 +141,28 @@
                 <span asp-validation-for="ExperienceLevel"></span>
             </div>
         </div>
+
+        <fieldset class="password-fieldset">
+            <legend>Change password</legend>
+            <p class="muted text-sm">Leave these blank to keep your current password.</p>
+            <div class="form-grid">
+                <div class="form-group span-2">
+                    <label class="form-label" asp-for="CurrentPassword"></label>
+                    <input asp-for="CurrentPassword" autocomplete="current-password" />
+                    <span asp-validation-for="CurrentPassword"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" asp-for="NewPassword"></label>
+                    <input asp-for="NewPassword" autocomplete="new-password" />
+                    <span asp-validation-for="NewPassword"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" asp-for="ConfirmNewPassword"></label>
+                    <input asp-for="ConfirmNewPassword" autocomplete="new-password" />
+                    <span asp-validation-for="ConfirmNewPassword"></span>
+                </div>
+            </div>
+        </fieldset>
 
         <button type="submit" class="btn btn-primary">Save changes</button>
     </form>

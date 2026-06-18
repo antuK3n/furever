@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FurEver.Web.Data;
 using FurEver.Web.Models;
+using FurEver.Web.Models.ViewModels;
 
 namespace FurEver.Web.Controllers;
 
@@ -14,18 +15,35 @@ public class AdoptionsController : Controller
 
     public AdoptionsController(FurEverContext db) => _db = db;
 
+    // Flat adoption fee charged on every application (Philippine Pesos).
+    public const decimal FlatAdoptionFee = 2000m;
+
     private int AdopterId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-    // GET /Adoptions — my applications
-    public async Task<IActionResult> Index()
+    // GET /Adoptions — my applications (optionally filtered by status)
+    public async Task<IActionResult> Index(string? status)
     {
-        var adoptions = await _db.Adoptions
+        var all = await _db.Adoptions
             .Where(a => a.AdopterId == AdopterId)
             .Include(a => a.Pet)
             .OrderByDescending(a => a.ApplicationDate)
+            .ThenByDescending(a => a.AdoptionId)
             .ToListAsync();
 
-        return View(adoptions);
+        var effective = string.IsNullOrWhiteSpace(status) ? "All" : status;
+
+        var model = new MyAdoptionListViewModel
+        {
+            Status = effective,
+            TotalCount = all.Count,
+            PendingCount = all.Count(a => a.Status == "Pending"),
+            CompletedCount = all.Count(a => a.Status == "Completed"),
+            CancelledCount = all.Count(a => a.Status == "Cancelled"),
+            ReturnedCount = all.Count(a => a.Status == "Returned"),
+            Adoptions = effective == "All" ? all : all.Where(a => a.Status == effective).ToList()
+        };
+
+        return View(model);
     }
 
     // POST /Adoptions/Apply
@@ -55,6 +73,7 @@ public class AdoptionsController : Controller
             PetId = petId,
             AdopterId = AdopterId,
             ApplicationDate = DateOnly.FromDateTime(DateTime.Today),
+            AdoptionFee = FlatAdoptionFee,
             ContractSigned = "No",
             Status = "Pending"
         });

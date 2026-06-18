@@ -26,6 +26,54 @@ public class AdminAdoptionListViewModel
 {
     public List<Adoption> Adoptions { get; set; } = new();
     public string? Status { get; set; }
+
+    public int TotalCount { get; set; }
+    public int PendingCount { get; set; }
+    public int CompletedCount { get; set; }
+    public int CancelledCount { get; set; }
+    public int ReturnedCount { get; set; }
+}
+
+public class AdminAdopterRow
+{
+    public Adopter Adopter { get; set; } = null!;
+    public int AdoptionCount { get; set; }
+    public int FavoriteCount { get; set; }
+}
+
+public class AdminAdopterEditViewModel
+{
+    public int AdopterId { get; set; }
+
+    [Required, StringLength(100), EmailAddress]
+    public string Email { get; set; } = string.Empty;
+
+    [Required, StringLength(100)]
+    [Display(Name = "Full Name")]
+    public string FullName { get; set; } = string.Empty;
+
+    [Required, StringLength(15)]
+    [Display(Name = "Contact Number")]
+    public string ContactNo { get; set; } = string.Empty;
+
+    [Required, StringLength(200)]
+    public string Address { get; set; } = string.Empty;
+
+    [Required]
+    [Display(Name = "Housing Type")]
+    public string HousingType { get; set; } = "House";
+
+    [Required]
+    [Display(Name = "Has Other Pets")]
+    public string HasOtherPets { get; set; } = "No";
+
+    [Required]
+    [Display(Name = "Has Children")]
+    public string HasChildren { get; set; } = "No";
+
+    [Required]
+    [Display(Name = "Experience Level")]
+    public string ExperienceLevel { get; set; } = "First-time";
 }
 
 public class AdminVetVisitListViewModel
@@ -61,6 +109,12 @@ public class ReportsViewModel
 
     public MonthlyAdoptionStats? Stats { get; set; }
     public List<SpeciesCount> SpeciesBreakdown { get; set; } = new();
+
+    // Adoption Management Report — full join across adoptions, pets, and adopters.
+    public List<Adoption> AllAdoptions { get; set; } = new();
+
+    // Average fee across completed adoptions (0 when none completed).
+    public decimal AverageFee { get; set; }
 }
 
 public class SpeciesCount

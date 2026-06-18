@@ -4,8 +4,6 @@
     var monthName = new DateTime(Model.Year, Model.Month, 1).ToString("MMMM yyyy");
 }
 
-<partial name="_AdminNav" />
-
 <h1>Reports</h1>
 
 <form method="get" class="filter-bar mt-3">
@@ -62,6 +60,61 @@
                 <span class="stat-label">Revenue</span>
             </div>
         </div>
+    }
+</section>
+
+<section class="section">
+    <h2>Adoption Management Report</h2>
+    <p class="muted text-sm">Every application joined across pets and adopters.</p>
+
+    <div class="stat-grid">
+        <div class="stat-card">
+            <span class="stat-value">@Model.AllAdoptions.Count</span>
+            <span class="stat-label">Total applications</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value">@Model.AverageFee.ToString("C")</span>
+            <span class="stat-label">Average fee (completed)</span>
+        </div>
+    </div>
+
+    @if (Model.AllAdoptions.Count > 0)
+    {
+        <div class="table-wrap mt-3">
+            <table class="data">
+                <thead>
+                    <tr>
+                        <th>Pet</th>
+                        <th>Species</th>
+                        <th>Adopter</th>
+                        <th>Housing</th>
+                        <th>Experience</th>
+                        <th>Applied</th>
+                        <th>Status</th>
+                        <th>Fee</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var a in Model.AllAdoptions)
+                    {
+                        <tr>
+                            <td><strong>@a.Pet?.PetName</strong></td>
+                            <td>@a.Pet?.Species</td>
+                            <td>@a.Adopter?.FullName</td>
+                            <td>@a.Adopter?.HousingType</td>
+                            <td>@a.Adopter?.ExperienceLevel</td>
+                            <td>@a.ApplicationDate.ToString("MMM d, yyyy")</td>
+                            <td><span class="badge badge-@a.Status.ToLower()">@a.Status</span></td>
+                            <td>@(a.AdoptionFee?.ToString("C") ?? "—")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p class="muted">No adoption applications recorded yet.</p>
     }
 </section>
 

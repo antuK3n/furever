@@ -20,7 +20,7 @@
 
 @if (Model.PopularPets.Count > 0)
 {
-    <section class="section" aria-labelledby="popular-heading">
+    <div class="section" role="region" aria-labelledby="popular-heading">
         <div class="section-head">
             <h2 id="popular-heading">Most loved right now</h2>
             <a asp-controller="Pets" asp-action="Index">See all pets &rarr;</a>
@@ -31,12 +31,12 @@
                 <partial name="_PetCard" model="item.Pet" view-data='new ViewDataDictionary(ViewData) { ["FavoriteCount"] = item.FavoriteCount }' />
             }
         </div>
-    </section>
+    </div>
 }
 
 @if (Model.NewArrivals.Count > 0)
 {
-    <section class="section" aria-labelledby="arrivals-heading">
+    <div class="section" role="region" aria-labelledby="arrivals-heading">
         <div class="section-head">
             <h2 id="arrivals-heading">New arrivals</h2>
         </div>
@@ -46,7 +46,7 @@
                 <partial name="_PetCard" model="pet" />
             }
         </div>
-    </section>
+    </div>
 }
 
 @if (Model.PopularPets.Count == 0 && Model.NewArrivals.Count == 0)

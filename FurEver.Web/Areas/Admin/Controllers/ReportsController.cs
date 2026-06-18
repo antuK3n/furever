@@ -42,6 +42,21 @@ public class ReportsController : Controller
             .OrderByDescending(s => s.Total)
             .ToListAsync();
 
+        // Adoption Management Report — every application with pet + adopter detail.
+        model.AllAdoptions = await _db.Adoptions
+            .Include(a => a.Pet)
+            .Include(a => a.Adopter)
+            .OrderByDescending(a => a.ApplicationDate)
+            .ThenByDescending(a => a.AdoptionId)
+            .ToListAsync();
+
+        // Average fee across completed adoptions that have a fee recorded.
+        var completedFees = await _db.Adoptions
+            .Where(a => a.Status == "Completed" && a.AdoptionFee != null)
+            .Select(a => a.AdoptionFee!.Value)
+            .ToListAsync();
+        model.AverageFee = completedFees.Count > 0 ? completedFees.Average() : 0m;
+
         return View(model);
     }
 }

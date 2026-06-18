@@ -1,0 +1,36 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Admin log in";
+}
+
+<div class="auth-card">
+    <h1>Admin sign in</h1>
+    <p class="muted">Staff access only. Manage pets, adoptions, and shelter records.</p>
+
+    <form asp-area="Admin" asp-controller="Auth" asp-action="Login" method="post">
+        <div asp-validation-summary="ModelOnly"></div>
+        <input type="hidden" asp-for="ReturnUrl" />
+
+        <div class="form-group">
+            <label class="form-label" asp-for="Email"></label>
+            <input asp-for="Email" autocomplete="email" />
+            <span asp-validation-for="Email"></span>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" asp-for="Password"></label>
+            <input asp-for="Password" autocomplete="current-password" />
+            <span asp-validation-for="Password"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full">Log in</button>
+    </form>
+
+    <p class="text-sm mt-4 mb-0">
+        Looking to adopt? <a asp-area="" asp-controller="Account" asp-action="Login">Member log in</a>
+    </p>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

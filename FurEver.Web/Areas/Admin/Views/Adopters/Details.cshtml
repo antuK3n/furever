@@ -3,9 +3,18 @@
     ViewData["Title"] = Model.FullName;
 }
 
-<partial name="_AdminNav" />
-
-<h1>@Model.FullName</h1>
+<div class="row">
+    <h1 class="mb-0">@Model.FullName</h1>
+    <div class="actions-cell">
+        <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Adopters"
+           asp-action="Edit" asp-route-id="@Model.AdopterId">Edit</a>
+        <form asp-area="Admin" asp-controller="Adopters" asp-action="Delete"
+              asp-route-id="@Model.AdopterId" method="post" class="inline-form"
+              onsubmit="return confirm('Delete @Model.FullName? This also removes their applications and favorites.');">
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+        </form>
+    </div>
+</div>
 
 <ul class="spec-list">
     <li><span class="label">Email</span><span class="value">@Model.Email</span></li>
