@@ -18,7 +18,8 @@ public class RegisterViewModel
     [Required, EmailAddress, StringLength(100)]
     public string Email { get; set; } = string.Empty;
 
-    [Required, DataType(DataType.Password), MinLength(6)]
+    [Required, DataType(DataType.Password)]
+    [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
     public string Password { get; set; } = string.Empty;
 
     [Required, DataType(DataType.Password), Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
@@ -91,7 +92,8 @@ public class ProfileViewModel
     [Display(Name = "Current Password")]
     public string? CurrentPassword { get; set; }
 
-    [DataType(DataType.Password), MinLength(6)]
+    [DataType(DataType.Password)]
+    [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
     [Display(Name = "New Password")]
     public string? NewPassword { get; set; }
 

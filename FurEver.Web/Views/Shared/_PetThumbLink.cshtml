@@ -1,0 +1,35 @@
+@model FurEver.Web.Models.Pet?
+@*
+    Compact pet reference for admin tables/lists: a small thumbnail plus the
+    pet's name, linking to the public pet details page.
+    Usage: <partial name="_PetThumbLink" model="adoption.Pet" />
+*@
+@if (Model is not null)
+{
+    var glyph = Model.Species?.ToLowerInvariant() switch
+    {
+        "dog" => "dog",
+        "cat" => "cat",
+        "rabbit" => "rabbit",
+        "bird" => "bird",
+        _ => "heart"
+    };
+
+    <a class="pet-thumb-link" asp-area="" asp-controller="Pets" asp-action="Details" asp-route-id="@Model.PetId">
+        <span class="pet-thumb">
+            @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+            {
+                <img src="@Model.PhotoUrl" alt="@Model.PetName" loading="lazy" />
+            }
+            else
+            {
+                <span class="pet-thumb-placeholder" aria-hidden="true"><partial name="_Glyph" model="glyph" /></span>
+            }
+        </span>
+        <strong>@Model.PetName</strong>
+    </a>
+}
+else
+{
+    <span class="muted">—</span>
+}

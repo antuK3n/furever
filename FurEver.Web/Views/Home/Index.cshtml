@@ -4,17 +4,31 @@
 }
 
 <section class="hero">
-    <h1>Find your new best friend</h1>
-    <p>
-        Every pet at FurEver has a story — and a clean bill of health, a known temperament,
-        and a team that wants to find them the right home. Maybe yours.
-    </p>
-    <div class="hero-actions">
-        <a class="btn btn-accent" asp-controller="Pets" asp-action="Index">Browse available pets</a>
-        @if (User.Identity?.IsAuthenticated != true)
-        {
-            <a class="btn btn-secondary" asp-controller="Account" asp-action="Register">Create an account</a>
-        }
+    <div class="hero-copy">
+        <h1>Find your<br /> new best friend</h1>
+        <p>
+            Every pet at FurEver has a story — and a clean bill of health, a known temperament,
+            and a team that wants to find them the right home. Maybe yours.
+        </p>
+        <div class="hero-actions">
+            <a class="btn btn-accent" asp-controller="Pets" asp-action="Index">Browse available pets</a>
+            @if (User.Identity?.IsAuthenticated != true)
+            {
+                <a class="btn btn-secondary" asp-controller="Account" asp-action="Register">Create an account</a>
+            }
+        </div>
+    </div>
+    <div class="hero-media" aria-hidden="true">
+        <figure class="hero-photo hero-photo--top">
+            <img src="~/uploads/luna.jpg" alt="" loading="eager" />
+        </figure>
+        <figure class="hero-photo hero-photo--bottom">
+            <img src="~/uploads/mochi.jpg" alt="" loading="eager" />
+        </figure>
+        <figure class="hero-photo hero-photo--main">
+            <img src="~/uploads/biscuit.jpg" alt="" loading="eager" />
+            <span class="hero-sticker"><img src="~/favicon.svg" alt="" /></span>
+        </figure>
     </div>
 </section>
 

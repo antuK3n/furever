@@ -36,7 +36,7 @@
                 @foreach (var vax in Model)
                 {
                     <tr>
-                        <td><strong>@vax.Visit?.Pet?.PetName</strong></td>
+                        <td><partial name="_PetThumbLink" model="vax.Visit?.Pet" /></td>
                         <td>@vax.VaccineName</td>
                         <td>@(vax.DateAdministered?.ToString("MMM d, yyyy") ?? "—")</td>
                         <td>@(vax.NextDueDate?.ToString("MMM d, yyyy") ?? "—")</td>
@@ -45,7 +45,7 @@
                             <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Vaccinations"
                                asp-action="Edit" asp-route-id="@vax.VaccinationId">Edit</a>
                             <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="VetVisits"
-                               asp-action="Details" asp-route-id="@vax.VisitId">Visit</a>
+                               asp-action="Details" asp-route-id="@vax.VisitId">View Visit</a>
                         </td>
                     </tr>
                 }

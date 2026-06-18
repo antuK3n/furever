@@ -58,7 +58,7 @@
                     @foreach (var a in Model.RecentApplications)
                     {
                         <tr>
-                            <td>@a.Pet?.PetName</td>
+                            <td><partial name="_PetThumbLink" model="a.Pet" /></td>
                             <td>@a.Adopter?.FullName</td>
                             <td>@a.ApplicationDate.ToString("MMM d, yyyy")</td>
                             <td><span class="badge badge-@a.Status.ToLower()">@a.Status</span></td>
@@ -96,7 +96,7 @@
                     @foreach (var v in Model.UpcomingVisits)
                     {
                         <tr>
-                            <td>@v.Pet?.PetName</td>
+                            <td><partial name="_PetThumbLink" model="v.Pet" /></td>
                             <td>@v.NextVisitDate?.ToString("MMM d, yyyy")</td>
                             <td>@v.VeterinarianName</td>
                             <td>@v.VisitType</td>

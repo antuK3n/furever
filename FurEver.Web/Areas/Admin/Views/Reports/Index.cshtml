@@ -98,7 +98,7 @@
                     @foreach (var a in Model.AllAdoptions)
                     {
                         <tr>
-                            <td><strong>@a.Pet?.PetName</strong></td>
+                            <td><partial name="_PetThumbLink" model="a.Pet" /></td>
                             <td>@a.Pet?.Species</td>
                             <td>@a.Adopter?.FullName</td>
                             <td>@a.Adopter?.HousingType</td>

@@ -51,11 +51,7 @@
                 @foreach (var pet in Model.Pets)
                 {
                     <tr>
-                        <td>
-                            <a asp-area="" asp-controller="Pets" asp-action="Details" asp-route-id="@pet.PetId">
-                                <strong>@pet.PetName</strong>
-                            </a>
-                        </td>
+                        <td><partial name="_PetThumbLink" model="pet" /></td>
                         <td>@pet.Species · @pet.Breed</td>
                         <td>@pet.Age</td>
                         <td>@pet.DateArrived.ToString("MMM d, yyyy")</td>
