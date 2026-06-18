@@ -1,87 +1,112 @@
 @model FurEver.Web.Models.ViewModels.AdminAdopterEditViewModel
 @{
     ViewData["Title"] = $"Edit {Model.FullName}";
+    var isAjax = Context.Request.Headers["X-Requested-With"] == "XMLHttpRequest";
+    if (isAjax) { Layout = null; }
 }
 
-<div class="auth-card wide">
+<div class="@(isAjax ? null : "auth-card wide")">
+@if (isAjax)
+{
+    <div class="modal-head">
+        <h2 class="modal-title">Edit adopter</h2>
+        <button type="button" class="modal-close" data-modal-close aria-label="Close">&times;</button>
+    </div>
+}
+else
+{
     <h1>Edit adopter</h1>
+}
 
-    <form asp-area="Admin" asp-controller="Adopters" asp-action="Edit" asp-route-id="@Model.AdopterId" method="post">
-        <div asp-validation-summary="ModelOnly"></div>
-        <input type="hidden" asp-for="AdopterId" />
+<form asp-area="Admin" asp-controller="Adopters" asp-action="Edit" asp-route-id="@Model.AdopterId" method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <input type="hidden" asp-for="AdopterId" />
 
-        <div class="form-grid">
-            <div class="form-group span-2">
-                <label class="form-label" asp-for="FullName"></label>
-                <input asp-for="FullName" />
-                <span asp-validation-for="FullName"></span>
-            </div>
-
-            <div class="form-group span-2">
-                <label class="form-label" asp-for="Email"></label>
-                <input asp-for="Email" type="email" />
-                <span asp-validation-for="Email"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label" asp-for="ContactNo"></label>
-                <input asp-for="ContactNo" type="tel" />
-                <span asp-validation-for="ContactNo"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label" asp-for="HousingType"></label>
-                <select asp-for="HousingType">
-                    <option>House</option>
-                    <option>Apartment</option>
-                    <option>Condo</option>
-                    <option>Farm</option>
-                </select>
-                <span asp-validation-for="HousingType"></span>
-            </div>
-
-            <div class="form-group span-2">
-                <label class="form-label" asp-for="Address"></label>
-                <input asp-for="Address" />
-                <span asp-validation-for="Address"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label" asp-for="HasOtherPets"></label>
-                <select asp-for="HasOtherPets">
-                    <option>No</option>
-                    <option>Yes</option>
-                </select>
-                <span asp-validation-for="HasOtherPets"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label" asp-for="HasChildren"></label>
-                <select asp-for="HasChildren">
-                    <option>No</option>
-                    <option>Yes</option>
-                </select>
-                <span asp-validation-for="HasChildren"></span>
-            </div>
-
-            <div class="form-group span-2">
-                <label class="form-label" asp-for="ExperienceLevel"></label>
-                <select asp-for="ExperienceLevel">
-                    <option>First-time</option>
-                    <option>Experienced</option>
-                </select>
-                <span asp-validation-for="ExperienceLevel"></span>
-            </div>
+    <div class="form-grid">
+        <div class="form-group span-2">
+            <label class="form-label" asp-for="FullName"></label>
+            <input asp-for="FullName" />
+            <span asp-validation-for="FullName"></span>
         </div>
 
+        <div class="form-group span-2">
+            <label class="form-label" asp-for="Email"></label>
+            <input asp-for="Email" type="email" />
+            <span asp-validation-for="Email"></span>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" asp-for="ContactNo"></label>
+            <input asp-for="ContactNo" type="tel" />
+            <span asp-validation-for="ContactNo"></span>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" asp-for="HousingType"></label>
+            <select asp-for="HousingType">
+                <option>House</option>
+                <option>Apartment</option>
+                <option>Condo</option>
+                <option>Farm</option>
+            </select>
+            <span asp-validation-for="HousingType"></span>
+        </div>
+
+        <div class="form-group span-2">
+            <label class="form-label" asp-for="Address"></label>
+            <input asp-for="Address" />
+            <span asp-validation-for="Address"></span>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" asp-for="HasOtherPets"></label>
+            <select asp-for="HasOtherPets">
+                <option>No</option>
+                <option>Yes</option>
+            </select>
+            <span asp-validation-for="HasOtherPets"></span>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" asp-for="HasChildren"></label>
+            <select asp-for="HasChildren">
+                <option>No</option>
+                <option>Yes</option>
+            </select>
+            <span asp-validation-for="HasChildren"></span>
+        </div>
+
+        <div class="form-group span-2">
+            <label class="form-label" asp-for="ExperienceLevel"></label>
+            <select asp-for="ExperienceLevel">
+                <option>First-time</option>
+                <option>Experienced</option>
+            </select>
+            <span asp-validation-for="ExperienceLevel"></span>
+        </div>
+    </div>
+
+    @if (isAjax)
+    {
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+    }
+    else
+    {
         <div class="detail-actions">
             <button type="submit" class="btn btn-primary">Save changes</button>
             <a class="btn btn-secondary" asp-area="Admin" asp-controller="Adopters"
                asp-action="Details" asp-route-id="@Model.AdopterId">Cancel</a>
         </div>
-    </form>
+    }
+</form>
 </div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+@if (!isAjax)
+{
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
 }

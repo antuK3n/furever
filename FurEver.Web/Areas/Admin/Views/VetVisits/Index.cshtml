@@ -5,7 +5,8 @@
 
 <div class="row">
     <h1 class="mb-0">Vet visits</h1>
-    <a class="btn btn-primary" asp-area="Admin" asp-controller="VetVisits" asp-action="Create">+ Record visit</a>
+    <a class="btn btn-primary" asp-area="Admin" asp-controller="VetVisits" asp-action="Create"
+       data-modal-url="@Url.Action("Create", "VetVisits", new { area = "Admin" })">+ Record visit</a>
 </div>
 
 <form method="get" class="filter-bar mt-3">
@@ -59,7 +60,8 @@
                             <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="VetVisits"
                                asp-action="Details" asp-route-id="@v.VisitId">View</a>
                             <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="VetVisits"
-                               asp-action="Edit" asp-route-id="@v.VisitId">Edit</a>
+                               asp-action="Edit" asp-route-id="@v.VisitId"
+                               data-modal-url="@Url.Action("Edit", "VetVisits", new { area = "Admin", id = v.VisitId })">Edit</a>
                         </td>
                     </tr>
                 }

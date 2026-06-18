@@ -7,10 +7,11 @@
     <h1 class="mb-0">@Model.VisitType — @Model.Pet?.PetName</h1>
     <div class="row">
         <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="VetVisits"
-           asp-action="Edit" asp-route-id="@Model.VisitId">Edit</a>
+           asp-action="Edit" asp-route-id="@Model.VisitId"
+           data-modal-url="@Url.Action("Edit", "VetVisits", new { area = "Admin", id = Model.VisitId })">Edit</a>
         <form asp-area="Admin" asp-controller="VetVisits" asp-action="Delete"
               asp-route-id="@Model.VisitId" method="post" class="inline-form"
-              onsubmit="return confirm('Delete this visit and its vaccinations?');">
+              data-confirm="Delete this visit and its vaccinations?" data-confirm-title="Delete vet visit?">
             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
         </form>
     </div>
@@ -38,7 +39,8 @@
     <div class="row">
         <h2 class="mb-0">Vaccinations (@Model.Vaccinations.Count)</h2>
         <a class="btn btn-primary btn-sm" asp-area="Admin" asp-controller="Vaccinations"
-           asp-action="Create" asp-route-visitId="@Model.VisitId">+ Add vaccination</a>
+           asp-action="Create" asp-route-visitId="@Model.VisitId"
+           data-modal-url="@Url.Action("Create", "Vaccinations", new { area = "Admin", visitId = Model.VisitId })">+ Add vaccination</a>
     </div>
 
     @if (Model.Vaccinations.Count > 0)
@@ -66,10 +68,11 @@
                             <td>@(vax.Cost?.ToString("C") ?? "—")</td>
                             <td class="actions-cell">
                                 <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Vaccinations"
-                                   asp-action="Edit" asp-route-id="@vax.VaccinationId">Edit</a>
+                                   asp-action="Edit" asp-route-id="@vax.VaccinationId"
+                                   data-modal-url="@Url.Action("Edit", "Vaccinations", new { area = "Admin", id = vax.VaccinationId })">Edit</a>
                                 <form asp-area="Admin" asp-controller="Vaccinations" asp-action="Delete"
                                       asp-route-id="@vax.VaccinationId" method="post" class="inline-form"
-                                      onsubmit="return confirm('Delete this vaccination record?');">
+                                      data-confirm="Delete this vaccination record?" data-confirm-title="Delete vaccination?">
                                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                 </form>
                             </td>

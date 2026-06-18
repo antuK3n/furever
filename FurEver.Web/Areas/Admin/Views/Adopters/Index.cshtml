@@ -41,10 +41,11 @@
                             <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Adopters"
                                asp-action="Details" asp-route-id="@a.AdopterId">View</a>
                             <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Adopters"
-                               asp-action="Edit" asp-route-id="@a.AdopterId">Edit</a>
+                               asp-action="Edit" asp-route-id="@a.AdopterId"
+                               data-modal-url="@Url.Action("Edit", "Adopters", new { area = "Admin", id = a.AdopterId })">Edit</a>
                             <form asp-area="Admin" asp-controller="Adopters" asp-action="Delete"
                                   asp-route-id="@a.AdopterId" method="post" class="inline-form"
-                                  onsubmit="return confirm('Delete @a.FullName? This also removes their applications and favorites.');">
+                                  data-confirm="Delete @a.FullName? This also removes their applications and favorites." data-confirm-title="Delete adopter?">
                                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                             </form>
                         </td>

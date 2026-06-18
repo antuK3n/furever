@@ -18,7 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Shantell+Sans:wght@500;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body>
+<body class="@(isAdminArea ? "admin" : null)">
     <header class="site-header">
         <nav class="container" aria-label="Main navigation">
             <a class="brand" asp-area="" asp-controller="Home" asp-action="Index">
@@ -109,6 +109,26 @@
                         <button type="submit" class="btn btn-danger">Log out</button>
                     </form>
                 </div>
+            </div>
+        </dialog>
+
+        <dialog id="confirm-dialog" class="modal" aria-labelledby="confirm-title">
+            <div class="modal-card">
+                <h2 id="confirm-title" class="modal-title" data-confirm-title>Are you sure?</h2>
+                <p class="modal-body" data-confirm-body>This action can't be undone.</p>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" data-confirm-cancel>Cancel</button>
+                    <button type="button" class="btn btn-danger" data-confirm-ok>Delete</button>
+                </div>
+            </div>
+        </dialog>
+    }
+
+    @if (isAdminArea && isAdmin)
+    {
+        <dialog id="admin-modal" class="modal modal-wide" aria-labelledby="admin-modal-title">
+            <div class="modal-card" data-modal-content>
+                <p class="modal-loading">Loading…</p>
             </div>
         </dialog>
     }

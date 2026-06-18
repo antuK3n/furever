@@ -7,32 +7,53 @@
 
 <div class="stat-grid">
     <div class="stat-card">
-        <span class="stat-value">@Model.AvailablePets</span>
-        <span class="stat-label">Available pets</span>
+        <span class="stat-icon" aria-hidden="true"><partial name="_Glyph" model='"sprout"' /></span>
+        <span class="stat-text">
+            <span class="stat-value">@Model.AvailablePets</span>
+            <span class="stat-label">Available pets</span>
+        </span>
     </div>
     <div class="stat-card">
-        <span class="stat-value">@Model.ReservedPets</span>
-        <span class="stat-label">Reserved</span>
+        <span class="stat-icon" aria-hidden="true"><partial name="_Glyph" model='"clipboard"' /></span>
+        <span class="stat-text">
+            <span class="stat-value">@Model.ReservedPets</span>
+            <span class="stat-label">Reserved</span>
+        </span>
     </div>
     <div class="stat-card">
-        <span class="stat-value">@Model.AdoptedPets</span>
-        <span class="stat-label">Adopted</span>
+        <span class="stat-icon" aria-hidden="true"><partial name="_Glyph" model='"house"' /></span>
+        <span class="stat-text">
+            <span class="stat-value">@Model.AdoptedPets</span>
+            <span class="stat-label">Adopted</span>
+        </span>
     </div>
     <div class="stat-card">
-        <span class="stat-value">@Model.MedicalHoldPets</span>
-        <span class="stat-label">Medical hold</span>
+        <span class="stat-icon" aria-hidden="true"><partial name="_Glyph" model='"vet"' /></span>
+        <span class="stat-text">
+            <span class="stat-value">@Model.MedicalHoldPets</span>
+            <span class="stat-label">Medical hold</span>
+        </span>
     </div>
     <div class="stat-card">
-        <span class="stat-value">@Model.TotalAdopters</span>
-        <span class="stat-label">Registered adopters</span>
+        <span class="stat-icon" aria-hidden="true"><partial name="_Glyph" model='"heart"' /></span>
+        <span class="stat-text">
+            <span class="stat-value">@Model.TotalAdopters</span>
+            <span class="stat-label">Registered adopters</span>
+        </span>
     </div>
     <div class="stat-card @(Model.PendingApplications > 0 ? "stat-attention" : null)">
-        <span class="stat-value">@Model.PendingApplications</span>
-        <span class="stat-label">Pending applications</span>
+        <span class="stat-icon" aria-hidden="true"><partial name="_Glyph" model='"clipboard"' /></span>
+        <span class="stat-text">
+            <span class="stat-value">@Model.PendingApplications</span>
+            <span class="stat-label">Pending applications</span>
+        </span>
     </div>
     <div class="stat-card @(Model.OverdueVaccinations > 0 ? "stat-attention" : null)">
-        <span class="stat-value">@Model.OverdueVaccinations</span>
-        <span class="stat-label">Overdue vaccinations</span>
+        <span class="stat-icon" aria-hidden="true"><partial name="_Glyph" model='"vet"' /></span>
+        <span class="stat-text">
+            <span class="stat-value">@Model.OverdueVaccinations</span>
+            <span class="stat-label">Overdue vaccinations</span>
+        </span>
     </div>
 </div>
 

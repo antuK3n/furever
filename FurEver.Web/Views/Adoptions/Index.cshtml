@@ -54,7 +54,7 @@
                             <th scope="col">Adoption date</th>
                             <th scope="col">Fee</th>
                             <th scope="col">Contract</th>
-                            <th scope="col"><span class="visually-hidden">Actions</span></th>
+                            <th scope="col">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -71,7 +71,9 @@
                                 <td><span class="badge badge-@a.Status.ToLower()">@a.Status</span></td>
                                 <td>@(a.AdoptionDate?.ToString("MMM d, yyyy") ?? "—")</td>
                                 <td>@(a.AdoptionFee?.ToString("C") ?? "—")</td>
-                                <td>@a.ContractSigned</td>
+                                <td>
+                                    <span class="badge badge-@(string.Equals(a.ContractSigned, "Yes", StringComparison.OrdinalIgnoreCase) ? "completed" : "neutral")">@a.ContractSigned</span>
+                                </td>
                                 <td>
                                     @if (a.Status == "Pending")
                                     {
@@ -79,6 +81,10 @@
                                             <input type="hidden" name="id" value="@a.AdoptionId" />
                                             <button type="submit" class="btn btn-secondary btn-sm">Cancel</button>
                                         </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="muted">—</span>
                                     }
                                 </td>
                             </tr>

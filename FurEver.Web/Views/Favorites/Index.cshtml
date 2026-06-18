@@ -18,37 +18,59 @@
     else
     {
         <p class="muted">@Model.Count saved pet@(Model.Count == 1 ? "" : "s")</p>
-        <div class="stack-4">
+        <div class="fav-list">
             @foreach (var fav in Model)
             {
                 var pet = fav.Pet!;
-                <div class="card card-hover">
-                    <div class="row" style="justify-content: space-between;">
-                        <div>
-                            <h3 class="mb-0">
-                                <a asp-controller="Pets" asp-action="Details" asp-route-id="@pet.PetId">@pet.PetName</a>
-                                <span class="badge badge-@pet.Status.ToLower().Replace(" ", "-")">@pet.Status</span>
-                            </h3>
-                            <p class="muted text-sm mb-0 mt-2">
-                                @pet.Breed &middot; @pet.Age &middot; saved @fav.DateAdded.ToString("MMM d, yyyy")
-                            </p>
+                var glyph = pet.Species.ToLower() switch
+                {
+                    "dog" => "dog",
+                    "cat" => "cat",
+                    "rabbit" => "rabbit",
+                    "bird" => "bird",
+                    _ => "heart"
+                };
+                <article class="card fav-item">
+                    <a class="fav-photo" asp-controller="Pets" asp-action="Details" asp-route-id="@pet.PetId"
+                       aria-label="View details for @pet.PetName">
+                        @if (!string.IsNullOrEmpty(pet.PhotoUrl))
+                        {
+                            <img src="@pet.PhotoUrl" alt="@pet.PetName, a @pet.Breed @pet.Species" loading="lazy" />
+                        }
+                        else
+                        {
+                            <span class="fav-photo-placeholder" aria-hidden="true"><partial name="_Glyph" model="glyph" /></span>
+                        }
+                    </a>
+
+                    <div class="fav-body">
+                        <div class="fav-head">
+                            <div>
+                                <h3 class="mb-0">
+                                    <a asp-controller="Pets" asp-action="Details" asp-route-id="@pet.PetId">@pet.PetName</a>
+                                    <span class="badge badge-@pet.Status.ToLower().Replace(" ", "-")">@pet.Status</span>
+                                </h3>
+                                <p class="muted text-sm mb-0 mt-1">
+                                    @pet.Breed &middot; @pet.Age &middot; saved @fav.DateAdded.ToString("MMM d, yyyy")
+                                </p>
+                            </div>
+                            <form asp-action="Remove" method="post" class="inline-form">
+                                <input type="hidden" name="id" value="@fav.FavoriteId" />
+                                <button type="submit" class="btn btn-secondary btn-sm">Remove</button>
+                            </form>
                         </div>
-                        <form asp-action="Remove" method="post">
+
+                        <form asp-action="UpdateNotes" method="post" class="fav-notes mt-3">
                             <input type="hidden" name="id" value="@fav.FavoriteId" />
-                            <button type="submit" class="btn btn-secondary btn-sm">Remove</button>
+                            <div class="form-group">
+                                <label class="form-label" for="notes-@fav.FavoriteId">My notes</label>
+                                <textarea id="notes-@fav.FavoriteId" name="notes"
+                                          placeholder="Why did @pet.PetName catch your eye?">@fav.Notes</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-secondary btn-sm">Save note</button>
                         </form>
                     </div>
-
-                    <form asp-action="UpdateNotes" method="post" class="mt-4">
-                        <input type="hidden" name="id" value="@fav.FavoriteId" />
-                        <div class="form-group">
-                            <label class="form-label" for="notes-@fav.FavoriteId">My notes</label>
-                            <textarea id="notes-@fav.FavoriteId" name="notes" class="input"
-                                      placeholder="Why did @pet.PetName catch your eye?">@fav.Notes</textarea>
-                        </div>
-                        <button type="submit" class="btn btn-secondary btn-sm">Save note</button>
-                    </form>
-                </div>
+                </article>
             }
         </div>
     }

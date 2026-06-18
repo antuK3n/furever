@@ -563,6 +563,65 @@ h1::after,
 }
 .fav-count .glyph-inline { color: var(--coral); }
 
+/* ============ Favorites list ============ */
+
+.fav-list {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.fav-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+@media (min-width: 560px) {
+  .fav-item { flex-direction: row; align-items: stretch; }
+}
+
+.fav-photo {
+  flex: none;
+  display: block;
+  width: 100%;
+  height: 10rem;
+  border-radius: var(--wobble-sm);
+  overflow: hidden;
+  background: var(--paper-green);
+  border: 2px solid var(--line-soft);
+}
+@media (min-width: 560px) {
+  .fav-photo { width: 9rem; height: 9rem; align-self: flex-start; }
+}
+
+.fav-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+.fav-photo:hover img { transform: scale(1.04); }
+
+.fav-photo-placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--primary);
+}
+.fav-photo-placeholder .glyph { width: 3rem; height: 3rem; }
+
+.fav-body { flex: 1 1 auto; min-width: 0; }
+
+.fav-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.fav-notes textarea { min-height: 3.5rem; }
+
 /* ============ Forms ============ */
 
 .form-group { margin-bottom: var(--space-4); }
@@ -966,6 +1025,17 @@ table.data tbody tr:hover { background: oklch(0.4 0.09 155 / 0.045); }
   box-shadow: var(--shadow-sm);
 }
 
+/* Veterinary care page: balance visits into a responsive card grid */
+.visit-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) {
+  .visit-grid { grid-template-columns: repeat(2, 1fr); align-items: start; }
+}
+.visit-grid .visit-item { margin-bottom: 0; }
+
 .visit-head {
   display: flex;
   align-items: center;
@@ -1107,6 +1177,7 @@ table.data tbody tr:hover { background: oklch(0.4 0.09 155 / 0.045); }
 .mt-4 { margin-top: var(--space-4); }
 .mb-0 { margin-bottom: 0; }
 .w-full { width: 100%; }
+.is-hidden { display: none !important; }
 
 .visually-hidden {
   position: absolute;
@@ -1375,3 +1446,184 @@ table.data tbody tr:hover { background: oklch(0.4 0.09 155 / 0.045); }
 }
 
 .modal-actions form { margin: 0; }
+
+/* Wider modal for forms loaded into a dialog */
+.modal-wide { width: min(40rem, calc(100vw - 2 * var(--space-4))); }
+.modal-wide .modal-card { padding: var(--space-6) var(--space-8); }
+.modal-loading {
+  padding: var(--space-8);
+  text-align: center;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+/* ============ Dropdown arrow spacing (task: filter selects) ============ */
+
+.filter-bar select,
+.form-group select,
+.form-field select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: calc(var(--space-8) + var(--space-2));
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23556b5d' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-4) center;
+  background-size: 1rem;
+}
+
+/* ============ Action column alignment ============ */
+
+.actions-col { text-align: right; }
+
+/* ============ Admin stat cards — icons + design (task) ============ */
+
+.stat-card {
+  position: relative;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.stat-icon {
+  flex: none;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  background: var(--paper-green);
+  border: 2px solid var(--line-soft);
+  border-radius: 55% 45% 50% 60% / 50% 60% 45% 55%;
+}
+
+.stat-icon .glyph { width: 1.6rem; height: 1.6rem; }
+
+.stat-text { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; overflow: hidden; }
+
+/* Keep the figure on one line so the autosizer can shrink it to fit. */
+.stat-value { white-space: nowrap; max-width: 100%; }
+
+.stat-attention .stat-icon {
+  color: var(--accent-hover);
+  background: oklch(0.97 0.05 85);
+  border-color: oklch(0.65 0.15 65 / 0.5);
+}
+
+/* ============ Admin color scheme — "blueprint indigo" (task) ============ */
+
+body.admin {
+  --primary: oklch(0.45 0.11 275);
+  --primary-hover: oklch(0.38 0.12 275);
+  --primary-press: oklch(0.33 0.11 275);
+  --paper-green: oklch(0.95 0.03 285);
+  --line-soft: oklch(0.4 0.05 285 / 0.16);
+  --line: oklch(0.4 0.05 285 / 0.3);
+  --shadow-sm: 0.15rem 0.2rem 0 oklch(0.35 0.08 285 / 0.1);
+  --shadow-md: 0.25rem 0.3rem 0 oklch(0.35 0.08 285 / 0.12);
+  --shadow-lg: 0.4rem 0.45rem 0 oklch(0.35 0.08 285 / 0.14);
+}
+
+body.admin .filter-bar select,
+body.admin .form-group select,
+body.admin .form-field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235a5b87' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+/* ============ Admin form fields — readability (task) ============ */
+
+/* The admin add/edit form partials use .form-field; give it the same
+   polished treatment as .form-group so inputs are spaced and legible. */
+.form-field { margin-bottom: var(--space-4); }
+
+.form-field label {
+  display: block;
+  font-weight: 700;
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-1);
+}
+
+.form-field input[type="text"],
+.form-field input[type="email"],
+.form-field input[type="password"],
+.form-field input[type="tel"],
+.form-field input[type="date"],
+.form-field input[type="number"],
+.form-field input[type="datetime-local"],
+.form-field input:not([type]),
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-4);
+  border: 2px solid var(--line);
+  border-radius: var(--wobble-sm);
+  /* Use background-color (not the `background` shorthand) so the custom
+     select chevron's background-repeat/position/size from the dropdown-arrow
+     rule are preserved. The shorthand would reset them, tiling the arrow. */
+  background-color: var(--surface);
+  font-family: inherit;
+  font-size: var(--text-base);
+  color: var(--ink);
+  transition: border-color var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.form-field textarea { min-height: 5rem; resize: vertical; }
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px oklch(0.4 0.09 155 / 0.16);
+  outline: none;
+}
+
+.form-field input[type="file"] {
+  width: 100%;
+  font-size: var(--text-sm);
+}
+
+/* ============ Modal form fragment header (task: admin modals) ============ */
+
+.modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.modal-head .modal-title { margin: 0; }
+
+.modal-close {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--muted);
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: var(--wobble-sm);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out);
+}
+
+.modal-close:hover {
+  background: var(--paper-green);
+  color: var(--ink);
+}
+
+/* Forms inside the loaded modal scroll if taller than the viewport. */
+.modal-wide .modal-card {
+  max-height: calc(100vh - 2 * var(--space-6));
+  overflow-y: auto;
+}
+
+.modal-wide .modal-actions { margin-top: var(--space-5); }

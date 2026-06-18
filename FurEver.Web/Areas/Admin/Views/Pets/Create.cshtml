@@ -1,20 +1,38 @@
 @model PetFormViewModel
 @{
     ViewData["Title"] = "Add Pet";
+    var isAjax = Context.Request.Headers["X-Requested-With"] == "XMLHttpRequest";
+    if (isAjax) { Layout = null; }
 }
 
-<div class="auth-card wide">
-    <h1>Add a pet</h1>
-
+@if (isAjax)
+{
+    <div class="modal-head">
+        <h2 class="modal-title">Add a pet</h2>
+        <button type="button" class="modal-close" data-modal-close aria-label="Close">&times;</button>
+    </div>
     <form asp-area="Admin" asp-controller="Pets" asp-action="Create" method="post" enctype="multipart/form-data">
         <partial name="_PetForm" />
-        <div class="row mt-3">
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
             <button type="submit" class="btn btn-primary">Add pet</button>
-            <a class="btn btn-secondary" asp-area="Admin" asp-controller="Pets" asp-action="Index">Cancel</a>
         </div>
     </form>
-</div>
+}
+else
+{
+    <div class="auth-card wide">
+        <h1>Add a pet</h1>
+        <form asp-area="Admin" asp-controller="Pets" asp-action="Create" method="post" enctype="multipart/form-data">
+            <partial name="_PetForm" />
+            <div class="row mt-3">
+                <button type="submit" class="btn btn-primary">Add pet</button>
+                <a class="btn btn-secondary" asp-area="Admin" asp-controller="Pets" asp-action="Index">Cancel</a>
+            </div>
+        </form>
+    </div>
 
-@section Scripts {
-    <partial name="/Views/Shared/_ValidationScriptsPartial.cshtml" />
+    @section Scripts {
+        <partial name="/Views/Shared/_ValidationScriptsPartial.cshtml" />
+    }
 }

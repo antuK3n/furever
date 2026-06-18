@@ -7,10 +7,11 @@
     <h1 class="mb-0">@Model.FullName</h1>
     <div class="actions-cell">
         <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Adopters"
-           asp-action="Edit" asp-route-id="@Model.AdopterId">Edit</a>
+           asp-action="Edit" asp-route-id="@Model.AdopterId"
+           data-modal-url="@Url.Action("Edit", "Adopters", new { area = "Admin", id = Model.AdopterId })">Edit</a>
         <form asp-area="Admin" asp-controller="Adopters" asp-action="Delete"
               asp-route-id="@Model.AdopterId" method="post" class="inline-form"
-              onsubmit="return confirm('Delete @Model.FullName? This also removes their applications and favorites.');">
+              data-confirm="Delete @Model.FullName? This also removes their applications and favorites." data-confirm-title="Delete adopter?">
             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
         </form>
     </div>

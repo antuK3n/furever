@@ -29,9 +29,13 @@ public class HomeController : Controller
             .Take(10)
             .ToListAsync();
 
-        // Subquery 2: newest arrivals (top 5 by arrival date)
+        // Subquery 2: newest arrivals — available pets that arrived within the
+        // last 30 days, newest first (capped at 5). The date window keeps the
+        // "New arrivals" label honest: pets stop appearing once they're no
+        // longer recent, rather than always showing the 5 latest regardless of age.
+        var cutoff = DateOnly.FromDateTime(DateTime.Today).AddDays(-30);
         var newArrivals = await _db.Pets
-            .Where(p => p.Status == "Available")
+            .Where(p => p.Status == "Available" && p.DateArrived >= cutoff)
             .OrderByDescending(p => p.DateArrived)
             .ThenByDescending(p => p.PetId)
             .Take(5)

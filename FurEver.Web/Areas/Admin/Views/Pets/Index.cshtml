@@ -5,7 +5,8 @@
 
 <div class="row">
     <h1 class="mb-0">Pets</h1>
-    <a class="btn btn-primary" asp-area="Admin" asp-controller="Pets" asp-action="Create">+ Add pet</a>
+    <a class="btn btn-primary" asp-area="Admin" asp-controller="Pets" asp-action="Create"
+       data-modal-url="@Url.Action("Create", "Pets", new { area = "Admin" })">+ Add pet</a>
 </div>
 
 <form method="get" class="filter-bar mt-3" role="search">
@@ -44,7 +45,7 @@
                     <th>Age</th>
                     <th>Arrived</th>
                     <th>Status</th>
-                    <th><span class="visually-hidden">Actions</span></th>
+                    <th class="actions-col">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -58,10 +59,11 @@
                         <td><span class="badge badge-@pet.Status.ToLower().Replace(" ", "-")">@pet.Status</span></td>
                         <td class="actions-cell">
                             <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Pets"
-                               asp-action="Edit" asp-route-id="@pet.PetId">Edit</a>
+                               asp-action="Edit" asp-route-id="@pet.PetId"
+                               data-modal-url="@Url.Action("Edit", "Pets", new { area = "Admin", id = pet.PetId })">Edit</a>
                             <form asp-area="Admin" asp-controller="Pets" asp-action="Delete"
                                   asp-route-id="@pet.PetId" method="post" class="inline-form"
-                                  onsubmit="return confirm('Delete @pet.PetName? This also removes their adoption and vet records.');">
+                                  data-confirm="Delete @pet.PetName? This also removes their adoption and vet records." data-confirm-title="Delete pet?">
                                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                             </form>
                         </td>

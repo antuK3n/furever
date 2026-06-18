@@ -2,24 +2,46 @@
 @{
     var visit = (VeterinaryVisit?)ViewBag.Visit;
     ViewData["Title"] = "Edit Vaccination";
+    var isAjax = Context.Request.Headers["X-Requested-With"] == "XMLHttpRequest";
+    if (isAjax) { Layout = null; }
 }
 
-<div class="auth-card wide">
-    <h1>Edit vaccination</h1>
+@if (isAjax)
+{
+    <div class="modal-head">
+        <h2 class="modal-title">Edit vaccination</h2>
+        <button type="button" class="modal-close" data-modal-close aria-label="Close">&times;</button>
+    </div>
     <p class="muted">
         For @visit?.Pet?.PetName — @visit?.VisitType on @visit?.VisitDate.ToString("MMMM d, yyyy")
     </p>
-
     <form asp-area="Admin" asp-controller="Vaccinations" asp-action="Edit" asp-route-id="@Model.VaccinationId" method="post">
         <partial name="_VaccinationForm" />
-        <div class="row mt-3">
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
             <button type="submit" class="btn btn-primary">Save changes</button>
-            <a class="btn btn-secondary" asp-area="Admin" asp-controller="VetVisits"
-               asp-action="Details" asp-route-id="@Model.VisitId">Cancel</a>
         </div>
     </form>
-</div>
+}
+else
+{
+    <div class="auth-card wide">
+        <h1>Edit vaccination</h1>
+        <p class="muted">
+            For @visit?.Pet?.PetName — @visit?.VisitType on @visit?.VisitDate.ToString("MMMM d, yyyy")
+        </p>
 
-@section Scripts {
-    <partial name="/Views/Shared/_ValidationScriptsPartial.cshtml" />
+        <form asp-area="Admin" asp-controller="Vaccinations" asp-action="Edit" asp-route-id="@Model.VaccinationId" method="post">
+            <partial name="_VaccinationForm" />
+            <div class="row mt-3">
+                <button type="submit" class="btn btn-primary">Save changes</button>
+                <a class="btn btn-secondary" asp-area="Admin" asp-controller="VetVisits"
+                   asp-action="Details" asp-route-id="@Model.VisitId">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    @section Scripts {
+        <partial name="/Views/Shared/_ValidationScriptsPartial.cshtml" />
+    }
 }

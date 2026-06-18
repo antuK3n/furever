@@ -36,7 +36,7 @@
                     <th>Applied</th>
                     <th>Status</th>
                     <th>Fee</th>
-                    <th><span class="visually-hidden">Actions</span></th>
+                    <th class="actions-col">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -77,7 +77,7 @@
                                 </form>
                                 <form asp-area="Admin" asp-controller="Adoptions" asp-action="Reject"
                                       asp-route-id="@a.AdoptionId" method="post" class="inline-form"
-                                      onsubmit="return confirm('Reject this application?');">
+                                      data-confirm="Reject this application?" data-confirm-title="Reject application?" data-confirm-ok="Reject">
                                     <button type="submit" class="btn btn-danger btn-sm">Reject</button>
                                 </form>
                             }
@@ -85,13 +85,13 @@
                             {
                                 <form asp-area="Admin" asp-controller="Adoptions" asp-action="Return"
                                       asp-route-id="@a.AdoptionId" method="post" class="inline-form"
-                                      onsubmit="return confirm('Mark this adoption as returned? The pet becomes available again.');">
+                                      data-confirm="Mark this adoption as returned? The pet becomes available again." data-confirm-title="Mark as returned?" data-confirm-ok="Mark returned">
                                     <button type="submit" class="btn btn-secondary btn-sm">Mark returned</button>
                                 </form>
                             }
                             <form asp-area="Admin" asp-controller="Adoptions" asp-action="Delete"
                                   asp-route-id="@a.AdoptionId" method="post" class="inline-form"
-                                  onsubmit="return confirm('Permanently delete this adoption record? This cannot be undone.');">
+                                  data-confirm="Permanently delete this adoption record? This cannot be undone." data-confirm-title="Delete adoption record?">
                                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                             </form>
                         </td>
