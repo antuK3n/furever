@@ -45,10 +45,10 @@
             <ul class="nav-links">
                 @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Adopter"))
                 {
+                    <li class="nav-greeting">Hi,&nbsp;<strong>@User.Identity.Name</strong></li>
                     <li><a asp-area="" asp-controller="Favorites" asp-action="Index">Favorites</a></li>
                     <li><a asp-area="" asp-controller="Adoptions" asp-action="Index">My Applications</a></li>
                     <li><a asp-area="" asp-controller="Account" asp-action="Profile">Profile</a></li>
-                    <li class="nav-greeting">Hi, <strong>@User.Identity.Name</strong></li>
                     <li>
                         <button type="button" class="nav-btn" data-logout-open>Log out</button>
                     </li>
