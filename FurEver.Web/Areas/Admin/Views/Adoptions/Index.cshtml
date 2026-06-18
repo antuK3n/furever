@@ -1,0 +1,89 @@
+@model AdminAdoptionListViewModel
+@{
+    ViewData["Title"] = "Adoptions";
+}
+
+<partial name="_AdminNav" />
+
+<h1>Adoptions</h1>
+
+<form method="get" class="filter-bar mt-3">
+    <label class="visually-hidden" for="status">Status</label>
+    <select id="status" name="status">
+        <option value="">All statuses</option>
+        @foreach (var st in new[] { "Pending", "Completed", "Returned", "Cancelled" })
+        {
+            <option value="@st" selected="@(Model.Status == st)">@st</option>
+        }
+    </select>
+    <button type="submit" class="btn btn-secondary">Filter</button>
+</form>
+
+@if (Model.Adoptions.Count > 0)
+{
+    <div class="table-wrap mt-3">
+        <table class="data">
+            <thead>
+                <tr>
+                    <th>Pet</th>
+                    <th>Adopter</th>
+                    <th>Applied</th>
+                    <th>Status</th>
+                    <th>Fee</th>
+                    <th><span class="visually-hidden">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var a in Model.Adoptions)
+                {
+                    <tr>
+                        <td>
+                            <a asp-area="" asp-controller="Pets" asp-action="Details" asp-route-id="@a.PetId">
+                                <strong>@a.Pet?.PetName</strong>
+                            </a>
+                        </td>
+                        <td>
+                            <a asp-area="Admin" asp-controller="Adopters" asp-action="Details" asp-route-id="@a.AdopterId">
+                                @a.Adopter?.FullName
+                            </a>
+                        </td>
+                        <td>@a.ApplicationDate.ToString("MMM d, yyyy")</td>
+                        <td><span class="badge badge-@a.Status.ToLower()">@a.Status</span></td>
+                        <td>@(a.AdoptionFee?.ToString("C") ?? "—")</td>
+                        <td class="actions-cell">
+                            @if (a.Status == "Pending")
+                            {
+                                <form asp-area="Admin" asp-controller="Adoptions" asp-action="Approve"
+                                      asp-route-id="@a.AdoptionId" method="post" class="inline-form">
+                                    <label class="visually-hidden" for="fee-@a.AdoptionId">Adoption fee</label>
+                                    <input type="number" id="fee-@a.AdoptionId" name="fee" min="0" step="0.01"
+                                           value="100.00" class="fee-input" aria-label="Adoption fee" />
+                                    <button type="submit" class="btn btn-primary btn-sm">Approve</button>
+                                </form>
+                                <form asp-area="Admin" asp-controller="Adoptions" asp-action="Reject"
+                                      asp-route-id="@a.AdoptionId" method="post" class="inline-form"
+                                      onsubmit="return confirm('Reject this application?');">
+                                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                </form>
+                            }
+                            else if (a.Status == "Completed")
+                            {
+                                <form asp-area="Admin" asp-controller="Adoptions" asp-action="Return"
+                                      asp-route-id="@a.AdoptionId" method="post" class="inline-form"
+                                      onsubmit="return confirm('Mark this adoption as returned? The pet becomes available again.');">
+                                    <button type="submit" class="btn btn-secondary btn-sm">Mark returned</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="empty-state">
+        <p>No adoptions match this filter.</p>
+    </div>
+}

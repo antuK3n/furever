@@ -1,0 +1,27 @@
+@model Vaccination
+@{
+    var visit = (VeterinaryVisit?)ViewBag.Visit;
+    ViewData["Title"] = "Add Vaccination";
+}
+
+<partial name="_AdminNav" />
+
+<div class="auth-card wide">
+    <h1>Add vaccination</h1>
+    <p class="muted">
+        For @visit?.Pet?.PetName — @visit?.VisitType on @visit?.VisitDate.ToString("MMMM d, yyyy")
+    </p>
+
+    <form asp-area="Admin" asp-controller="Vaccinations" asp-action="Create" method="post">
+        <partial name="_VaccinationForm" />
+        <div class="row mt-3">
+            <button type="submit" class="btn btn-primary">Add vaccination</button>
+            <a class="btn btn-secondary" asp-area="Admin" asp-controller="VetVisits"
+               asp-action="Details" asp-route-id="@Model.VisitId">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="/Views/Shared/_ValidationScriptsPartial.cshtml" />
+}

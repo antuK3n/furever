@@ -1,0 +1,52 @@
+@model PetListViewModel
+@{
+    ViewData["Title"] = "Find a Pet";
+}
+
+<div class="section">
+    <h1>Find a pet</h1>
+    <p class="muted">Browse our available pets — filter by species or search by name, breed, or temperament.</p>
+
+    <form method="get" class="filter-bar" role="search" aria-label="Filter pets">
+        <div class="form-group">
+            <label class="form-label" for="species">Species</label>
+            <select id="species" name="species" class="input">
+                <option value="">All species</option>
+                @foreach (var s in Model.SpeciesOptions)
+                {
+                    <option value="@s" selected="@(s == Model.Species)">@s</option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="search">Search</label>
+            <input id="search" type="text" name="search" class="input" value="@Model.Search"
+                   placeholder="Name, breed, or temperament" />
+        </div>
+        <button type="submit" class="btn btn-primary">Filter</button>
+        @if (!string.IsNullOrEmpty(Model.Species) || !string.IsNullOrEmpty(Model.Search))
+        {
+            <a class="btn btn-secondary" asp-action="Index">Clear</a>
+        }
+    </form>
+
+    @if (Model.Pets.Count > 0)
+    {
+        <p class="muted text-sm">@Model.Pets.Count pet@(Model.Pets.Count == 1 ? "" : "s") available</p>
+        <div class="pet-grid">
+            @foreach (var pet in Model.Pets)
+            {
+                <partial name="_PetCard" model="pet" />
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-glyph" aria-hidden="true"><partial name="_Glyph" model='"search"' /></div>
+            <h3>No pets match your search</h3>
+            <p>Try a different species or clear your filters.</p>
+            <a class="btn btn-primary" asp-action="Index">Show all pets</a>
+        </div>
+    }
+</div>

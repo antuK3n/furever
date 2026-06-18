@@ -1,0 +1,80 @@
+@model List<FurEver.Web.Models.VeterinaryVisit>
+@{
+    ViewData["Title"] = "Vet Care";
+    var visitTypes = new[] { "Checkup", "Vaccination", "Surgery", "Treatment", "Emergency" };
+    var selectedType = ViewBag.VisitType as string;
+}
+
+<div class="section">
+    <h1>Veterinary care at FurEver</h1>
+    <p class="muted">
+        We believe in transparency. Here's the recent veterinary care record for our pets —
+        every checkup, vaccination, and treatment.
+    </p>
+
+    <form method="get" class="filter-bar" aria-label="Filter visits">
+        <div class="form-group">
+            <label class="form-label" for="visitType">Visit type</label>
+            <select id="visitType" name="visitType" class="input">
+                <option value="">All types</option>
+                @foreach (var t in visitTypes)
+                {
+                    <option value="@t" selected="@(t == selectedType)">@t</option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Filter</button>
+        @if (!string.IsNullOrEmpty(selectedType))
+        {
+            <a class="btn btn-secondary" asp-action="Index">Clear</a>
+        }
+    </form>
+
+    @if (Model.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-glyph" aria-hidden="true"><partial name="_Glyph" model='"vet"' /></div>
+            <h3>No visits found</h3>
+            <p>No veterinary visits match this filter.</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var visit in Model)
+        {
+            <article class="visit-item">
+                <div class="visit-head">
+                    <h4 class="mb-0">
+                        <a asp-controller="Pets" asp-action="Details" asp-route-id="@visit.PetId">@visit.Pet?.PetName</a>
+                        &middot; @visit.VisitType
+                    </h4>
+                    <span class="muted text-sm">@visit.VisitDate.ToString("MMM d, yyyy") &middot; @visit.VeterinarianName</span>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(visit.Diagnosis))
+                {
+                    <p class="mb-0 mt-2"><strong>Diagnosis:</strong> @visit.Diagnosis</p>
+                }
+                @if (!string.IsNullOrWhiteSpace(visit.GeneralNotes))
+                {
+                    <p class="muted mb-0 mt-2">@visit.GeneralNotes</p>
+                }
+                @if (visit.Vaccinations.Count > 0)
+                {
+                    <ul class="vax-list">
+                        @foreach (var vax in visit.Vaccinations)
+                        {
+                            <li>
+                                <strong>@vax.VaccineName</strong>
+                                <span class="badge badge-@vax.Status.ToLower()">@vax.Status</span>
+                                @if (vax.NextDueDate.HasValue)
+                                {
+                                    <span class="muted">next due @vax.NextDueDate.Value.ToString("MMM d, yyyy")</span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+            </article>
+        }
+    }
+</div>

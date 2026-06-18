@@ -1,0 +1,65 @@
+@model Vaccination
+
+<div asp-validation-summary="ModelOnly" class="validation-summary-errors" role="alert"></div>
+
+<input type="hidden" asp-for="VisitId" />
+
+<div class="form-grid">
+    <div class="form-field">
+        <label asp-for="VaccineName"></label>
+        <input asp-for="VaccineName" />
+        <span asp-validation-for="VaccineName"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="Status"></label>
+        <select asp-for="Status">
+            <option value="Scheduled">Scheduled</option>
+            <option value="Completed">Completed</option>
+            <option value="Overdue">Overdue</option>
+        </select>
+        <span asp-validation-for="Status"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="DateAdministered"></label>
+        <input asp-for="DateAdministered" />
+        <span asp-validation-for="DateAdministered"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="NextDueDate"></label>
+        <input asp-for="NextDueDate" />
+        <span asp-validation-for="NextDueDate"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="AdministeredBy"></label>
+        <input asp-for="AdministeredBy" />
+        <span asp-validation-for="AdministeredBy"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="Manufacturer"></label>
+        <input asp-for="Manufacturer" />
+        <span asp-validation-for="Manufacturer"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="Site"></label>
+        <input asp-for="Site" placeholder="e.g. Left shoulder" />
+        <span asp-validation-for="Site"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="Cost"></label>
+        <input asp-for="Cost" type="number" step="0.01" min="0" />
+        <span asp-validation-for="Cost"></span>
+    </div>
+</div>
+
+<div class="form-field">
+    <label asp-for="Reaction"></label>
+    <textarea asp-for="Reaction" rows="2" placeholder="Leave blank if none"></textarea>
+    <span asp-validation-for="Reaction"></span>
+</div>

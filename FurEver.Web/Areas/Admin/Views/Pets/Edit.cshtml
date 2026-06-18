@@ -1,0 +1,23 @@
+@model PetFormViewModel
+@{
+    ViewData["Title"] = $"Edit {Model.Pet.PetName}";
+}
+
+<partial name="_AdminNav" />
+
+<div class="auth-card wide">
+    <h1>Edit @Model.Pet.PetName</h1>
+
+    <form asp-area="Admin" asp-controller="Pets" asp-action="Edit" asp-route-id="@Model.Pet.PetId"
+          method="post" enctype="multipart/form-data">
+        <partial name="_PetForm" />
+        <div class="row mt-3">
+            <button type="submit" class="btn btn-primary">Save changes</button>
+            <a class="btn btn-secondary" asp-area="Admin" asp-controller="Pets" asp-action="Index">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="/Views/Shared/_ValidationScriptsPartial.cshtml" />
+}

@@ -1,0 +1,63 @@
+@model List<FurEver.Web.Models.Adoption>
+@{
+    ViewData["Title"] = "My Applications";
+}
+
+<div class="section">
+    <h1>My adoption applications</h1>
+
+    @if (Model.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-glyph" aria-hidden="true"><partial name="_Glyph" model='"clipboard"' /></div>
+            <h3>No applications yet</h3>
+            <p>Found a pet you'd like to bring home? Apply from their profile page.</p>
+            <a class="btn btn-primary" asp-controller="Pets" asp-action="Index">Browse pets</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="data">
+                <thead>
+                    <tr>
+                        <th scope="col">Pet</th>
+                        <th scope="col">Applied</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Adoption date</th>
+                        <th scope="col">Fee</th>
+                        <th scope="col">Contract</th>
+                        <th scope="col"><span class="visually-hidden">Actions</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var a in Model)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-controller="Pets" asp-action="Details" asp-route-id="@a.PetId">
+                                    <strong>@a.Pet?.PetName</strong>
+                                </a>
+                                <span class="muted"> &middot; @a.Pet?.Breed</span>
+                            </td>
+                            <td>@a.ApplicationDate.ToString("MMM d, yyyy")</td>
+                            <td><span class="badge badge-@a.Status.ToLower()">@a.Status</span></td>
+                            <td>@(a.AdoptionDate?.ToString("MMM d, yyyy") ?? "—")</td>
+                            <td>@(a.AdoptionFee?.ToString("C") ?? "—")</td>
+                            <td>@a.ContractSigned</td>
+                            <td>
+                                @if (a.Status == "Pending")
+                                {
+                                    <form asp-action="Cancel" method="post">
+                                        <input type="hidden" name="id" value="@a.AdoptionId" />
+                                        <button type="submit" class="btn btn-secondary btn-sm">Cancel</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

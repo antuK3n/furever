@@ -1,0 +1,36 @@
+@model FurEver.Web.Models.Pet
+
+@{
+    var glyph = Model.Species.ToLower() switch
+    {
+        "dog" => "dog",
+        "cat" => "cat",
+        "rabbit" => "rabbit",
+        "bird" => "bird",
+        _ => "heart"
+    };
+}
+
+<a class="pet-card" asp-controller="Pets" asp-action="Details" asp-route-id="@Model.PetId"
+   aria-label="View details for @Model.PetName">
+    <div class="pet-card-media">
+        @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+        {
+            <img src="@Model.PhotoUrl" alt="@Model.PetName, a @Model.Breed @Model.Species" loading="lazy" />
+        }
+        else
+        {
+            <div class="pet-card-placeholder" aria-hidden="true"><partial name="_Glyph" model="glyph" /></div>
+        }
+        <span class="badge badge-@Model.Status.ToLower().Replace(" ", "-") badge-overlay">@Model.Status</span>
+        @if (ViewData["FavoriteCount"] is int favCount && favCount > 0)
+        {
+            <span class="fav-count"><svg class="glyph glyph-inline" viewBox="0 0 64 64" fill="currentColor" stroke="currentColor" stroke-width="5" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M32 52 C20 42 11 34 12.5 23 C13.5 15 22 12 28 17 C30 19 31 20 32 22 C33 20 34 19 36 17 C42 12 50.5 15 51.5 23 C53 34 44 42 32 52 Z" /></svg> @favCount</span>
+        }
+    </div>
+    <div class="pet-card-body">
+        <h3 class="pet-card-name">@Model.PetName</h3>
+        <p class="pet-card-meta">@Model.Breed &middot; @Model.Age &middot; @Model.Gender</p>
+        <p class="pet-card-meta">@Model.Temperament</p>
+    </div>
+</a>

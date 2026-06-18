@@ -1,0 +1,55 @@
+@model List<FurEver.Web.Models.Favorite>
+@{
+    ViewData["Title"] = "My Favorites";
+}
+
+<div class="section">
+    <h1>My favorites</h1>
+
+    @if (Model.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-glyph" aria-hidden="true"><partial name="_Glyph" model='"heart"' /></div>
+            <h3>No favorites yet</h3>
+            <p>When you find a pet you love, tap the heart on their profile to save them here.</p>
+            <a class="btn btn-primary" asp-controller="Pets" asp-action="Index">Browse pets</a>
+        </div>
+    }
+    else
+    {
+        <p class="muted">@Model.Count saved pet@(Model.Count == 1 ? "" : "s")</p>
+        <div class="stack-4">
+            @foreach (var fav in Model)
+            {
+                var pet = fav.Pet!;
+                <div class="card card-hover">
+                    <div class="row" style="justify-content: space-between;">
+                        <div>
+                            <h3 class="mb-0">
+                                <a asp-controller="Pets" asp-action="Details" asp-route-id="@pet.PetId">@pet.PetName</a>
+                                <span class="badge badge-@pet.Status.ToLower().Replace(" ", "-")">@pet.Status</span>
+                            </h3>
+                            <p class="muted text-sm mb-0 mt-2">
+                                @pet.Breed &middot; @pet.Age &middot; saved @fav.DateAdded.ToString("MMM d, yyyy")
+                            </p>
+                        </div>
+                        <form asp-action="Remove" method="post">
+                            <input type="hidden" name="id" value="@fav.FavoriteId" />
+                            <button type="submit" class="btn btn-secondary btn-sm">Remove</button>
+                        </form>
+                    </div>
+
+                    <form asp-action="UpdateNotes" method="post" class="mt-4">
+                        <input type="hidden" name="id" value="@fav.FavoriteId" />
+                        <div class="form-group">
+                            <label class="form-label" for="notes-@fav.FavoriteId">My notes</label>
+                            <textarea id="notes-@fav.FavoriteId" name="notes" class="input"
+                                      placeholder="Why did @pet.PetName catch your eye?">@fav.Notes</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-secondary btn-sm">Save note</button>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+</div>

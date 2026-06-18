@@ -1,0 +1,36 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<div class="auth-card">
+    <h1>Welcome back</h1>
+    <p class="muted">Log in to manage your favorites and adoption applications.</p>
+
+    <form asp-action="Login" method="post">
+        <div asp-validation-summary="ModelOnly"></div>
+        <input type="hidden" asp-for="ReturnUrl" />
+
+        <div class="form-group">
+            <label class="form-label" asp-for="Email"></label>
+            <input asp-for="Email" autocomplete="email" />
+            <span asp-validation-for="Email"></span>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" asp-for="Password"></label>
+            <input asp-for="Password" autocomplete="current-password" />
+            <span asp-validation-for="Password"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full">Log in</button>
+    </form>
+
+    <p class="text-sm mt-4 mb-0">
+        New to FurEver? <a asp-action="Register">Create an account</a>
+    </p>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

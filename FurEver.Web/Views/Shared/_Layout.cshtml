@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] is string t ? $"{t} — FurEver" : "FurEver")</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Shantell+Sans:wght@500;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="site-header">
+        <nav class="container" aria-label="Main navigation">
+            <a class="brand" asp-area="" asp-controller="Home" asp-action="Index">
+                <span class="brand-mark" aria-hidden="true"><partial name="_Glyph" model='"sprout"' /></span> FurEver
+            </a>
+            <ul class="nav-links">
+                <li><a asp-area="" asp-controller="Pets" asp-action="Index">Find a Pet</a></li>
+                <li><a asp-area="" asp-controller="VetVisits" asp-action="Index">Vet Care</a></li>
+            </ul>
+            <div class="nav-spacer"></div>
+            <ul class="nav-links">
+                @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Adopter"))
+                {
+                    <li><a asp-area="" asp-controller="Favorites" asp-action="Index">Favorites</a></li>
+                    <li><a asp-area="" asp-controller="Adoptions" asp-action="Index">My Applications</a></li>
+                    <li><a asp-area="" asp-controller="Account" asp-action="Profile">@User.Identity.Name</a></li>
+                    <li>
+                        <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                            <button type="submit" class="nav-btn">Log out</button>
+                        </form>
+                    </li>
+                }
+                else if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+                {
+                    <li><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Admin Dashboard</a></li>
+                    <li>
+                        <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                            <button type="submit" class="nav-btn">Log out</button>
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    <li><a asp-area="" asp-controller="Account" asp-action="Login">Log in</a></li>
+                    <li><a class="nav-cta" asp-area="" asp-controller="Account" asp-action="Register">Sign up</a></li>
+                }
+            </ul>
+        </nav>
+    </header>
+
+    <main role="main">
+        <div class="container">
+            @if (TempData["Success"] is string success)
+            {
+                <div class="flash flash-success" role="status">@success</div>
+            }
+            @if (TempData["Error"] is string error)
+            {
+                <div class="flash flash-error" role="alert">@error</div>
+            }
+            @RenderBody()
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <span>&copy; @DateTime.Now.Year FurEver Adoption Center</span>
+            <span>Every pet deserves a home.</span>
+        </div>
+    </footer>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

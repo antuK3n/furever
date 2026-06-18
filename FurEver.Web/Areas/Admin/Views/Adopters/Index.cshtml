@@ -1,0 +1,54 @@
+@model List<Adopter>
+@{
+    ViewData["Title"] = "Adopters";
+}
+
+<partial name="_AdminNav" />
+
+<h1>Adopters</h1>
+
+<form method="get" class="filter-bar mt-3" role="search">
+    <label class="visually-hidden" for="search">Search</label>
+    <input type="search" id="search" name="search" placeholder="Name or email…" value="@ViewBag.Search" />
+    <button type="submit" class="btn btn-secondary">Search</button>
+</form>
+
+@if (Model.Count > 0)
+{
+    <div class="table-wrap mt-3">
+        <table class="data">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Contact</th>
+                    <th>Housing</th>
+                    <th>Experience</th>
+                    <th><span class="visually-hidden">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var a in Model)
+                {
+                    <tr>
+                        <td><strong>@a.FullName</strong></td>
+                        <td>@a.Email</td>
+                        <td>@a.ContactNo</td>
+                        <td>@a.HousingType</td>
+                        <td>@a.ExperienceLevel</td>
+                        <td class="actions-cell">
+                            <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Adopters"
+                               asp-action="Details" asp-route-id="@a.AdopterId">View</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="empty-state">
+        <p>No adopters found.</p>
+    </div>
+}

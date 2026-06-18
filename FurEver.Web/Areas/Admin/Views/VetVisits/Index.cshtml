@@ -1,0 +1,77 @@
+@model AdminVetVisitListViewModel
+@{
+    ViewData["Title"] = "Vet Visits";
+}
+
+<partial name="_AdminNav" />
+
+<div class="row">
+    <h1 class="mb-0">Vet visits</h1>
+    <a class="btn btn-primary" asp-area="Admin" asp-controller="VetVisits" asp-action="Create">+ Record visit</a>
+</div>
+
+<form method="get" class="filter-bar mt-3">
+    <label class="visually-hidden" for="visitType">Visit type</label>
+    <select id="visitType" name="visitType">
+        <option value="">All types</option>
+        @foreach (var t in new[] { "Checkup", "Vaccination", "Surgery", "Treatment", "Emergency" })
+        {
+            <option value="@t" selected="@(Model.VisitType == t)">@t</option>
+        }
+    </select>
+
+    <label class="visually-hidden" for="petId">Pet</label>
+    <select id="petId" name="petId">
+        <option value="">All pets</option>
+        @foreach (var p in Model.PetOptions)
+        {
+            <option value="@p.PetId" selected="@(Model.PetId == p.PetId)">@p.PetName</option>
+        }
+    </select>
+
+    <button type="submit" class="btn btn-secondary">Filter</button>
+</form>
+
+@if (Model.Visits.Count > 0)
+{
+    <div class="table-wrap mt-3">
+        <table class="data">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Pet</th>
+                    <th>Type</th>
+                    <th>Veterinarian</th>
+                    <th>Cost</th>
+                    <th>Next visit</th>
+                    <th><span class="visually-hidden">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var v in Model.Visits)
+                {
+                    <tr>
+                        <td>@v.VisitDate.ToString("MMM d, yyyy")</td>
+                        <td><strong>@v.Pet?.PetName</strong></td>
+                        <td>@v.VisitType</td>
+                        <td>@v.VeterinarianName</td>
+                        <td>@v.ProcedureCost.ToString("C")</td>
+                        <td>@(v.NextVisitDate?.ToString("MMM d, yyyy") ?? "—")</td>
+                        <td class="actions-cell">
+                            <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="VetVisits"
+                               asp-action="Details" asp-route-id="@v.VisitId">View</a>
+                            <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="VetVisits"
+                               asp-action="Edit" asp-route-id="@v.VisitId">Edit</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="empty-state">
+        <p>No visits match these filters.</p>
+    </div>
+}

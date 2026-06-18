@@ -1,0 +1,63 @@
+@model List<Vaccination>
+@{
+    ViewData["Title"] = "Vaccinations";
+    string? status = ViewBag.Status;
+}
+
+<partial name="_AdminNav" />
+
+<h1>Vaccinations</h1>
+
+<form method="get" class="filter-bar mt-3">
+    <label class="visually-hidden" for="status">Status</label>
+    <select id="status" name="status">
+        <option value="">All statuses</option>
+        @foreach (var st in new[] { "Overdue", "Scheduled", "Completed" })
+        {
+            <option value="@st" selected="@(status == st)">@st</option>
+        }
+    </select>
+    <button type="submit" class="btn btn-secondary">Filter</button>
+</form>
+
+@if (Model.Count > 0)
+{
+    <div class="table-wrap mt-3">
+        <table class="data">
+            <thead>
+                <tr>
+                    <th>Pet</th>
+                    <th>Vaccine</th>
+                    <th>Given</th>
+                    <th>Next due</th>
+                    <th>Status</th>
+                    <th><span class="visually-hidden">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var vax in Model)
+                {
+                    <tr>
+                        <td><strong>@vax.Visit?.Pet?.PetName</strong></td>
+                        <td>@vax.VaccineName</td>
+                        <td>@(vax.DateAdministered?.ToString("MMM d, yyyy") ?? "—")</td>
+                        <td>@(vax.NextDueDate?.ToString("MMM d, yyyy") ?? "—")</td>
+                        <td><span class="badge badge-@vax.Status.ToLower()">@vax.Status</span></td>
+                        <td class="actions-cell">
+                            <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Vaccinations"
+                               asp-action="Edit" asp-route-id="@vax.VaccinationId">Edit</a>
+                            <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="VetVisits"
+                               asp-action="Details" asp-route-id="@vax.VisitId">Visit</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="empty-state">
+        <p>No vaccinations match this filter.</p>
+    </div>
+}

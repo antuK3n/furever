@@ -1,0 +1,22 @@
+@model VeterinaryVisit
+@{
+    ViewData["Title"] = "Record Vet Visit";
+}
+
+<partial name="_AdminNav" />
+
+<div class="auth-card wide">
+    <h1>Record a vet visit</h1>
+
+    <form asp-area="Admin" asp-controller="VetVisits" asp-action="Create" method="post">
+        <partial name="_VisitForm" />
+        <div class="row mt-3">
+            <button type="submit" class="btn btn-primary">Record visit</button>
+            <a class="btn btn-secondary" asp-area="Admin" asp-controller="VetVisits" asp-action="Index">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="/Views/Shared/_ValidationScriptsPartial.cshtml" />
+}

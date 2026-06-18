@@ -1,0 +1,85 @@
+@model PetListViewModel
+@{
+    ViewData["Title"] = "Manage Pets";
+}
+
+<partial name="_AdminNav" />
+
+<div class="row">
+    <h1 class="mb-0">Pets</h1>
+    <a class="btn btn-primary" asp-area="Admin" asp-controller="Pets" asp-action="Create">+ Add pet</a>
+</div>
+
+<form method="get" class="filter-bar mt-3" role="search">
+    <label class="visually-hidden" for="species">Species</label>
+    <select id="species" name="species">
+        <option value="">All species</option>
+        @foreach (var s in Model.SpeciesOptions)
+        {
+            <option value="@s" selected="@(Model.Species == s)">@s</option>
+        }
+    </select>
+
+    <label class="visually-hidden" for="status">Status</label>
+    <select id="status" name="status">
+        <option value="">All statuses</option>
+        @foreach (var st in new[] { "Available", "Reserved", "Adopted", "Medical Hold" })
+        {
+            <option value="@st" selected="@(Model.Status == st)">@st</option>
+        }
+    </select>
+
+    <label class="visually-hidden" for="search">Search</label>
+    <input type="search" id="search" name="search" placeholder="Name or breed…" value="@Model.Search" />
+
+    <button type="submit" class="btn btn-secondary">Filter</button>
+</form>
+
+@if (Model.Pets.Count > 0)
+{
+    <div class="table-wrap mt-3">
+        <table class="data">
+            <thead>
+                <tr>
+                    <th>Pet</th>
+                    <th>Species / Breed</th>
+                    <th>Age</th>
+                    <th>Arrived</th>
+                    <th>Status</th>
+                    <th><span class="visually-hidden">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pet in Model.Pets)
+                {
+                    <tr>
+                        <td>
+                            <a asp-area="" asp-controller="Pets" asp-action="Details" asp-route-id="@pet.PetId">
+                                <strong>@pet.PetName</strong>
+                            </a>
+                        </td>
+                        <td>@pet.Species · @pet.Breed</td>
+                        <td>@pet.Age</td>
+                        <td>@pet.DateArrived.ToString("MMM d, yyyy")</td>
+                        <td><span class="badge badge-@pet.Status.ToLower().Replace(" ", "-")">@pet.Status</span></td>
+                        <td class="actions-cell">
+                            <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Pets"
+                               asp-action="Edit" asp-route-id="@pet.PetId">Edit</a>
+                            <form asp-area="Admin" asp-controller="Pets" asp-action="Delete"
+                                  asp-route-id="@pet.PetId" method="post" class="inline-form"
+                                  onsubmit="return confirm('Delete @pet.PetName? This also removes their adoption and vet records.');">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="empty-state">
+        <p>No pets match these filters.</p>
+    </div>
+}

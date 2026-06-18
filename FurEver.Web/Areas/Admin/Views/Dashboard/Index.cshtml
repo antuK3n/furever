@@ -1,0 +1,115 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<partial name="_AdminNav" />
+
+<h1>Dashboard</h1>
+
+<div class="stat-grid">
+    <div class="stat-card">
+        <span class="stat-value">@Model.AvailablePets</span>
+        <span class="stat-label">Available pets</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">@Model.ReservedPets</span>
+        <span class="stat-label">Reserved</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">@Model.AdoptedPets</span>
+        <span class="stat-label">Adopted</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">@Model.MedicalHoldPets</span>
+        <span class="stat-label">Medical hold</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">@Model.TotalAdopters</span>
+        <span class="stat-label">Registered adopters</span>
+    </div>
+    <div class="stat-card @(Model.PendingApplications > 0 ? "stat-attention" : null)">
+        <span class="stat-value">@Model.PendingApplications</span>
+        <span class="stat-label">Pending applications</span>
+    </div>
+    <div class="stat-card @(Model.OverdueVaccinations > 0 ? "stat-attention" : null)">
+        <span class="stat-value">@Model.OverdueVaccinations</span>
+        <span class="stat-label">Overdue vaccinations</span>
+    </div>
+</div>
+
+<section class="section">
+    <div class="row">
+        <h2 class="mb-0">Recent applications</h2>
+        <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Adoptions" asp-action="Index">View all</a>
+    </div>
+
+    @if (Model.RecentApplications.Count > 0)
+    {
+        <div class="table-wrap mt-3">
+            <table class="data">
+                <thead>
+                    <tr>
+                        <th>Pet</th>
+                        <th>Adopter</th>
+                        <th>Applied</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var a in Model.RecentApplications)
+                    {
+                        <tr>
+                            <td>@a.Pet?.PetName</td>
+                            <td>@a.Adopter?.FullName</td>
+                            <td>@a.ApplicationDate.ToString("MMM d, yyyy")</td>
+                            <td><span class="badge badge-@a.Status.ToLower()">@a.Status</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p class="muted">No applications yet.</p>
+    }
+</section>
+
+<section class="section">
+    <div class="row">
+        <h2 class="mb-0">Upcoming vet visits</h2>
+        <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="VetVisits" asp-action="Index">View all</a>
+    </div>
+
+    @if (Model.UpcomingVisits.Count > 0)
+    {
+        <div class="table-wrap mt-3">
+            <table class="data">
+                <thead>
+                    <tr>
+                        <th>Pet</th>
+                        <th>Next visit</th>
+                        <th>Last seen by</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var v in Model.UpcomingVisits)
+                    {
+                        <tr>
+                            <td>@v.Pet?.PetName</td>
+                            <td>@v.NextVisitDate?.ToString("MMM d, yyyy")</td>
+                            <td>@v.VeterinarianName</td>
+                            <td>@v.VisitType</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p class="muted">No upcoming visits scheduled.</p>
+    }
+</section>

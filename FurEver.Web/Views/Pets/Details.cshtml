@@ -1,0 +1,153 @@
+@model PetDetailViewModel
+@{
+    var pet = Model.Pet;
+    ViewData["Title"] = pet.PetName;
+    var glyph = pet.Species.ToLower() switch
+    {
+        "dog" => "dog",
+        "cat" => "cat",
+        "rabbit" => "rabbit",
+        "bird" => "bird",
+        _ => "heart"
+    };
+}
+
+<div class="detail-grid">
+    <div class="detail-photo">
+        @if (!string.IsNullOrEmpty(pet.PhotoUrl))
+        {
+            <img src="@pet.PhotoUrl" alt="@pet.PetName, a @pet.Breed @pet.Species" />
+        }
+        else
+        {
+            <div class="pet-card-placeholder" aria-hidden="true"><partial name="_Glyph" model="glyph" /></div>
+        }
+    </div>
+
+    <div>
+        <div class="row">
+            <h1 class="mb-0">@pet.PetName</h1>
+            <span class="badge badge-@pet.Status.ToLower().Replace(" ", "-")">@pet.Status</span>
+        </div>
+        <p class="muted">@pet.Breed &middot; arrived @pet.DateArrived.ToString("MMMM d, yyyy")</p>
+
+        <ul class="spec-list">
+            <li><span class="label">Species</span><span class="value">@pet.Species</span></li>
+            <li><span class="label">Age</span><span class="value">@pet.Age</span></li>
+            <li><span class="label">Gender</span><span class="value">@pet.Gender</span></li>
+            <li><span class="label">Color</span><span class="value">@pet.Color</span></li>
+            <li><span class="label">Spayed / Neutered</span><span class="value">@pet.SpayedNeutered</span></li>
+            <li><span class="label">Temperament</span><span class="value">@pet.Temperament</span></li>
+        </ul>
+
+        @if (!string.IsNullOrWhiteSpace(pet.SpecialNeeds))
+        {
+            <div class="card">
+                <h4 class="mb-0">Special needs</h4>
+                <p class="mb-0 mt-2">@pet.SpecialNeeds</p>
+            </div>
+        }
+
+        <div class="detail-actions">
+            @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Adopter"))
+            {
+                @if (pet.Status == "Available")
+                {
+                    @if (Model.HasPendingApplication)
+                    {
+                        <button class="btn btn-secondary" disabled>Application pending</button>
+                    }
+                    else
+                    {
+                        <form asp-controller="Adoptions" asp-action="Apply" method="post">
+                            <input type="hidden" name="petId" value="@pet.PetId" />
+                            <button type="submit" class="btn btn-primary">Apply to adopt @pet.PetName</button>
+                        </form>
+                    }
+                }
+
+                @if (Model.IsFavorited)
+                {
+                    <form asp-controller="Favorites" asp-action="Remove" method="post">
+                        <input type="hidden" name="id" value="@Model.FavoriteId" />
+                        <input type="hidden" name="returnTo" value="pet" />
+                        <button type="submit" class="btn btn-secondary"><svg class="glyph glyph-inline" viewBox="0 0 64 64" fill="currentColor" stroke="currentColor" stroke-width="5" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M32 52 C20 42 11 34 12.5 23 C13.5 15 22 12 28 17 C30 19 31 20 32 22 C33 20 34 19 36 17 C42 12 50.5 15 51.5 23 C53 34 44 42 32 52 Z" /></svg> Remove favorite</button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-controller="Favorites" asp-action="Add" method="post">
+                        <input type="hidden" name="petId" value="@pet.PetId" />
+                        <button type="submit" class="btn btn-accent"><svg class="glyph glyph-inline" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M32 52 C20 42 11 34 12.5 23 C13.5 15 22 12 28 17 C30 19 31 20 32 22 C33 20 34 19 36 17 C42 12 50.5 15 51.5 23 C53 34 44 42 32 52 Z" /></svg> Add to favorites</button>
+                    </form>
+                }
+            }
+            else if (User.Identity?.IsAuthenticated != true && pet.Status == "Available")
+            {
+                <a class="btn btn-primary" asp-controller="Account" asp-action="Login"
+                   asp-route-returnUrl="@Url.Action("Details", "Pets", new { id = pet.PetId })">
+                    Log in to apply
+                </a>
+            }
+            <a class="btn btn-secondary" asp-action="Index">&larr; Back to all pets</a>
+        </div>
+    </div>
+</div>
+
+<section class="section" aria-labelledby="vet-history-heading">
+    <h2 id="vet-history-heading">Health record</h2>
+    @if (Model.VetHistory.Count > 0)
+    {
+        @foreach (var visit in Model.VetHistory)
+        {
+            <article class="visit-item">
+                <div class="visit-head">
+                    <h4 class="mb-0">@visit.VisitType &middot; @visit.VisitDate.ToString("MMM d, yyyy")</h4>
+                    <span class="muted text-sm">@visit.VeterinarianName</span>
+                </div>
+                <p class="muted text-sm mb-0 mt-2">
+                    @if (visit.Weight.HasValue)
+                    {
+                        <span>Weight: @visit.Weight kg &nbsp;</span>
+                    }
+                    @if (visit.Temperature.HasValue)
+                    {
+                        <span>Temp: @visit.Temperature&deg;C</span>
+                    }
+                </p>
+                @if (!string.IsNullOrWhiteSpace(visit.Diagnosis))
+                {
+                    <p class="mb-0 mt-2"><strong>Diagnosis:</strong> @visit.Diagnosis</p>
+                }
+                @if (!string.IsNullOrWhiteSpace(visit.GeneralNotes))
+                {
+                    <p class="mb-0 mt-2">@visit.GeneralNotes</p>
+                }
+                @if (visit.Vaccinations.Count > 0)
+                {
+                    <ul class="vax-list">
+                        @foreach (var vax in visit.Vaccinations)
+                        {
+                            <li>
+                                <strong>@vax.VaccineName</strong>
+                                <span class="badge badge-@(vax.Status.ToLower() == "completed" ? "completed" : vax.Status.ToLower() == "overdue" ? "overdue" : "neutral")">@vax.Status</span>
+                                @if (vax.DateAdministered.HasValue)
+                                {
+                                    <span class="muted">given @vax.DateAdministered.Value.ToString("MMM d, yyyy")</span>
+                                }
+                                @if (vax.NextDueDate.HasValue)
+                                {
+                                    <span class="muted">next due @vax.NextDueDate.Value.ToString("MMM d, yyyy")</span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+            </article>
+        }
+    }
+    else
+    {
+        <p class="muted">No vet visits recorded yet for @pet.PetName.</p>
+    }
+</section>

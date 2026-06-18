@@ -1,0 +1,80 @@
+@model Adopter
+@{
+    ViewData["Title"] = Model.FullName;
+}
+
+<partial name="_AdminNav" />
+
+<h1>@Model.FullName</h1>
+
+<ul class="spec-list">
+    <li><span class="label">Email</span><span class="value">@Model.Email</span></li>
+    <li><span class="label">Contact</span><span class="value">@Model.ContactNo</span></li>
+    <li><span class="label">Address</span><span class="value">@Model.Address</span></li>
+    <li><span class="label">Housing</span><span class="value">@Model.HousingType</span></li>
+    <li><span class="label">Other pets</span><span class="value">@Model.HasOtherPets</span></li>
+    <li><span class="label">Children</span><span class="value">@Model.HasChildren</span></li>
+    <li><span class="label">Experience</span><span class="value">@Model.ExperienceLevel</span></li>
+</ul>
+
+<section class="section">
+    <h2>Applications (@Model.Adoptions.Count)</h2>
+    @if (Model.Adoptions.Count > 0)
+    {
+        <div class="table-wrap">
+            <table class="data">
+                <thead>
+                    <tr>
+                        <th>Pet</th>
+                        <th>Applied</th>
+                        <th>Status</th>
+                        <th>Adoption date</th>
+                        <th>Fee</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var a in Model.Adoptions.OrderByDescending(x => x.ApplicationDate))
+                    {
+                        <tr>
+                            <td>@a.Pet?.PetName</td>
+                            <td>@a.ApplicationDate.ToString("MMM d, yyyy")</td>
+                            <td><span class="badge badge-@a.Status.ToLower()">@a.Status</span></td>
+                            <td>@(a.AdoptionDate?.ToString("MMM d, yyyy") ?? "—")</td>
+                            <td>@(a.AdoptionFee?.ToString("C") ?? "—")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p class="muted">No applications yet.</p>
+    }
+</section>
+
+<section class="section">
+    <h2>Favorites (@Model.Favorites.Count)</h2>
+    @if (Model.Favorites.Count > 0)
+    {
+        <ul class="vax-list">
+            @foreach (var f in Model.Favorites)
+            {
+                <li>
+                    <strong>@f.Pet?.PetName</strong>
+                    <span class="muted">added @f.DateAdded.ToString("MMM d, yyyy")</span>
+                    @if (!string.IsNullOrWhiteSpace(f.Notes))
+                    {
+                        <span class="muted">— @f.Notes</span>
+                    }
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p class="muted">No favorites.</p>
+    }
+</section>
+
+<a class="btn btn-secondary" asp-area="Admin" asp-controller="Adopters" asp-action="Index">&larr; All adopters</a>

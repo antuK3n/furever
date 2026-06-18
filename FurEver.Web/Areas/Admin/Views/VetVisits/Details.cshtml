@@ -1,0 +1,90 @@
+@model VeterinaryVisit
+@{
+    ViewData["Title"] = $"Visit — {Model.Pet?.PetName}";
+}
+
+<partial name="_AdminNav" />
+
+<div class="row">
+    <h1 class="mb-0">@Model.VisitType — @Model.Pet?.PetName</h1>
+    <div class="row">
+        <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="VetVisits"
+           asp-action="Edit" asp-route-id="@Model.VisitId">Edit</a>
+        <form asp-area="Admin" asp-controller="VetVisits" asp-action="Delete"
+              asp-route-id="@Model.VisitId" method="post" class="inline-form"
+              onsubmit="return confirm('Delete this visit and its vaccinations?');">
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+        </form>
+    </div>
+</div>
+
+<ul class="spec-list">
+    <li><span class="label">Date</span><span class="value">@Model.VisitDate.ToString("MMMM d, yyyy")</span></li>
+    <li><span class="label">Veterinarian</span><span class="value">@Model.VeterinarianName</span></li>
+    <li><span class="label">Weight</span><span class="value">@(Model.Weight.HasValue ? $"{Model.Weight} kg" : "—")</span></li>
+    <li><span class="label">Temperature</span><span class="value">@(Model.Temperature.HasValue ? $"{Model.Temperature}°C" : "—")</span></li>
+    <li><span class="label">Cost</span><span class="value">@Model.ProcedureCost.ToString("C")</span></li>
+    <li><span class="label">Next visit</span><span class="value">@(Model.NextVisitDate?.ToString("MMMM d, yyyy") ?? "—")</span></li>
+</ul>
+
+@if (!string.IsNullOrWhiteSpace(Model.Diagnosis))
+{
+    <p><strong>Diagnosis:</strong> @Model.Diagnosis</p>
+}
+@if (!string.IsNullOrWhiteSpace(Model.GeneralNotes))
+{
+    <p>@Model.GeneralNotes</p>
+}
+
+<section class="section">
+    <div class="row">
+        <h2 class="mb-0">Vaccinations (@Model.Vaccinations.Count)</h2>
+        <a class="btn btn-primary btn-sm" asp-area="Admin" asp-controller="Vaccinations"
+           asp-action="Create" asp-route-visitId="@Model.VisitId">+ Add vaccination</a>
+    </div>
+
+    @if (Model.Vaccinations.Count > 0)
+    {
+        <div class="table-wrap mt-3">
+            <table class="data">
+                <thead>
+                    <tr>
+                        <th>Vaccine</th>
+                        <th>Given</th>
+                        <th>Next due</th>
+                        <th>Status</th>
+                        <th>Cost</th>
+                        <th><span class="visually-hidden">Actions</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var vax in Model.Vaccinations)
+                    {
+                        <tr>
+                            <td><strong>@vax.VaccineName</strong></td>
+                            <td>@(vax.DateAdministered?.ToString("MMM d, yyyy") ?? "—")</td>
+                            <td>@(vax.NextDueDate?.ToString("MMM d, yyyy") ?? "—")</td>
+                            <td><span class="badge badge-@vax.Status.ToLower()">@vax.Status</span></td>
+                            <td>@(vax.Cost?.ToString("C") ?? "—")</td>
+                            <td class="actions-cell">
+                                <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Vaccinations"
+                                   asp-action="Edit" asp-route-id="@vax.VaccinationId">Edit</a>
+                                <form asp-area="Admin" asp-controller="Vaccinations" asp-action="Delete"
+                                      asp-route-id="@vax.VaccinationId" method="post" class="inline-form"
+                                      onsubmit="return confirm('Delete this vaccination record?');">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p class="muted">No vaccinations recorded for this visit.</p>
+    }
+</section>
+
+<a class="btn btn-secondary" asp-area="Admin" asp-controller="VetVisits" asp-action="Index">&larr; All visits</a>

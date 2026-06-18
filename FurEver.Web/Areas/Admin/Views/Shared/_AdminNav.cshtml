@@ -1,0 +1,19 @@
+@{
+    var current = ViewContext.RouteData.Values["controller"]?.ToString();
+}
+<nav class="admin-nav" aria-label="Admin sections">
+    <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index"
+       class="@(current == "Dashboard" ? "active" : null)">Dashboard</a>
+    <a asp-area="Admin" asp-controller="Pets" asp-action="Index"
+       class="@(current == "Pets" ? "active" : null)">Pets</a>
+    <a asp-area="Admin" asp-controller="Adopters" asp-action="Index"
+       class="@(current == "Adopters" ? "active" : null)">Adopters</a>
+    <a asp-area="Admin" asp-controller="Adoptions" asp-action="Index"
+       class="@(current == "Adoptions" ? "active" : null)">Adoptions</a>
+    <a asp-area="Admin" asp-controller="VetVisits" asp-action="Index"
+       class="@(current == "VetVisits" ? "active" : null)">Vet Visits</a>
+    <a asp-area="Admin" asp-controller="Vaccinations" asp-action="Index"
+       class="@(current == "Vaccinations" ? "active" : null)">Vaccinations</a>
+    <a asp-area="Admin" asp-controller="Reports" asp-action="Index"
+       class="@(current == "Reports" ? "active" : null)">Reports</a>
+</nav>

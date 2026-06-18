@@ -1,0 +1,99 @@
+@model PetFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="validation-summary-errors" role="alert"></div>
+
+<div class="form-grid">
+    <div class="form-field">
+        <label asp-for="Pet.PetName"></label>
+        <input asp-for="Pet.PetName" />
+        <span asp-validation-for="Pet.PetName"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="Pet.Species"></label>
+        <input asp-for="Pet.Species" list="species-suggestions" />
+        <datalist id="species-suggestions">
+            <option value="Dog"></option>
+            <option value="Cat"></option>
+            <option value="Rabbit"></option>
+            <option value="Bird"></option>
+        </datalist>
+        <span asp-validation-for="Pet.Species"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="Pet.Breed"></label>
+        <input asp-for="Pet.Breed" />
+        <span asp-validation-for="Pet.Breed"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="Pet.Age"></label>
+        <input asp-for="Pet.Age" placeholder="e.g. 2 years" />
+        <span asp-validation-for="Pet.Age"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="Pet.Gender"></label>
+        <select asp-for="Pet.Gender">
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+        </select>
+        <span asp-validation-for="Pet.Gender"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="Pet.Color"></label>
+        <input asp-for="Pet.Color" />
+        <span asp-validation-for="Pet.Color"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="Pet.DateArrived"></label>
+        <input asp-for="Pet.DateArrived" />
+        <span asp-validation-for="Pet.DateArrived"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="Pet.SpayedNeutered"></label>
+        <select asp-for="Pet.SpayedNeutered">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+        <span asp-validation-for="Pet.SpayedNeutered"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="Pet.Status"></label>
+        <select asp-for="Pet.Status">
+            <option value="Available">Available</option>
+            <option value="Reserved">Reserved</option>
+            <option value="Adopted">Adopted</option>
+            <option value="Medical Hold">Medical Hold</option>
+        </select>
+        <span asp-validation-for="Pet.Status"></span>
+    </div>
+</div>
+
+<div class="form-field">
+    <label asp-for="Pet.Temperament"></label>
+    <input asp-for="Pet.Temperament" placeholder="e.g. Gentle, loves water" />
+    <span asp-validation-for="Pet.Temperament"></span>
+</div>
+
+<div class="form-field">
+    <label asp-for="Pet.SpecialNeeds"></label>
+    <textarea asp-for="Pet.SpecialNeeds" rows="2" placeholder="Leave blank if none"></textarea>
+    <span asp-validation-for="Pet.SpecialNeeds"></span>
+</div>
+
+<div class="form-field">
+    <label asp-for="Photo">Photo (JPEG/PNG/GIF/WebP, max 5 MB)</label>
+    @if (!string.IsNullOrEmpty(Model.Pet.PhotoUrl))
+    {
+        <img src="@Model.Pet.PhotoUrl" alt="Current photo of @Model.Pet.PetName" class="photo-preview" />
+        <p class="muted text-sm mb-0">Uploading a new photo replaces the current one.</p>
+    }
+    <input asp-for="Photo" type="file" accept="image/jpeg,image/png,image/gif,image/webp" />
+    <span asp-validation-for="Photo"></span>
+</div>
