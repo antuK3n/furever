@@ -30,7 +30,16 @@
     </div>
     <div class="pet-card-body">
         <h3 class="pet-card-name">@Model.PetName</h3>
-        <p class="pet-card-meta">@Model.Breed &middot; @Model.Age &middot; @Model.Gender</p>
+        @{
+            var traits = new[] { Model.Breed, Model.Age, Model.Gender }
+                .Where(t => !string.IsNullOrWhiteSpace(t));
+        }
+        <div class="pet-traits">
+            @foreach (var trait in traits)
+            {
+                <span class="pet-trait">@trait</span>
+            }
+        </div>
         <p class="pet-card-meta">@Model.Temperament</p>
     </div>
 </a>
