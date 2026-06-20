@@ -1,0 +1,165 @@
+@model FurEver.Web.Models.Pet
+@{
+    ViewData["Title"] = Model.PetName;
+    var isAjax = Context.Request.Headers["X-Requested-With"] == "XMLHttpRequest";
+    if (isAjax) { Layout = null; }
+    var glyph = Model.Species.ToLower() switch
+    {
+        "dog" => "dog",
+        "cat" => "cat",
+        "rabbit" => "rabbit",
+        "bird" => "bird",
+        _ => "heart"
+    };
+    var vetVisits = Model.VetVisits.OrderByDescending(v => v.VisitDate).ToList();
+}
+
+@if (isAjax)
+{
+    <div class="modal-head">
+        <h2 class="modal-title">@Model.PetName</h2>
+        <button type="button" class="modal-close" data-modal-close aria-label="Close">&times;</button>
+    </div>
+
+    <div class="admin-detail">
+        <div class="admin-detail-photo">
+            @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+            {
+                <img src="@Model.PhotoUrl" alt="@Model.PetName, a @Model.Breed @Model.Species" />
+            }
+            else
+            {
+                <div class="pet-card-placeholder" aria-hidden="true"><partial name="_Glyph" model="glyph" /></div>
+            }
+        </div>
+
+        <div class="row mb-2">
+            <span class="badge badge-@Model.Status.ToLower().Replace(" ", "-")">@Model.Status</span>
+            <span class="muted text-sm">arrived @Model.DateArrived.ToString("MMMM d, yyyy")</span>
+        </div>
+
+        <ul class="spec-list">
+            <li><span class="label">Species</span><span class="value">@Model.Species</span></li>
+            <li><span class="label">Breed</span><span class="value">@Model.Breed</span></li>
+            <li><span class="label">Age</span><span class="value">@Model.Age</span></li>
+            <li><span class="label">Gender</span><span class="value">@Model.Gender</span></li>
+            <li><span class="label">Color</span><span class="value">@Model.Color</span></li>
+            <li><span class="label">Spayed / Neutered</span><span class="value">@Model.SpayedNeutered</span></li>
+            <li><span class="label">Temperament</span><span class="value">@Model.Temperament</span></li>
+        </ul>
+
+        @if (!string.IsNullOrWhiteSpace(Model.SpecialNeeds))
+        {
+            <div class="card mt-3">
+                <h4 class="mb-0">Special needs</h4>
+                <p class="mb-0 mt-2">@Model.SpecialNeeds</p>
+            </div>
+        }
+
+        <h3 class="mt-4 mb-2">Health record</h3>
+        @if (vetVisits.Count > 0)
+        {
+            @foreach (var visit in vetVisits)
+            {
+                <article class="visit-item">
+                    <div class="visit-head">
+                        <h4 class="mb-0">@visit.VisitType &middot; @visit.VisitDate.ToString("MMM d, yyyy")</h4>
+                        <span class="muted text-sm">@visit.VeterinarianName</span>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(visit.Diagnosis))
+                    {
+                        <p class="mb-0 mt-2"><strong>Diagnosis:</strong> @visit.Diagnosis</p>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(visit.GeneralNotes))
+                    {
+                        <p class="mb-0 mt-2">@visit.GeneralNotes</p>
+                    }
+                </article>
+            }
+        }
+        else
+        {
+            <p class="muted">No vet visits recorded yet.</p>
+        }
+    </div>
+
+    <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" data-modal-close>Close</button>
+        <a class="btn btn-primary" asp-area="Admin" asp-controller="Pets" asp-action="Edit" asp-route-id="@Model.PetId"
+           data-modal-url="@Url.Action("Edit", "Pets", new { area = "Admin", id = Model.PetId })">Edit pet</a>
+    </div>
+}
+else
+{
+    <div class="row">
+        <h1 class="mb-0">@Model.PetName</h1>
+        <span class="badge badge-@Model.Status.ToLower().Replace(" ", "-")">@Model.Status</span>
+    </div>
+    <p class="muted">@Model.Breed &middot; arrived @Model.DateArrived.ToString("MMMM d, yyyy")</p>
+
+    <div class="detail-grid">
+        <div class="detail-photo">
+            @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+            {
+                <img src="@Model.PhotoUrl" alt="@Model.PetName, a @Model.Breed @Model.Species" />
+            }
+            else
+            {
+                <div class="pet-card-placeholder" aria-hidden="true"><partial name="_Glyph" model="glyph" /></div>
+            }
+        </div>
+
+        <div>
+            <ul class="spec-list">
+                <li><span class="label">Species</span><span class="value">@Model.Species</span></li>
+                <li><span class="label">Breed</span><span class="value">@Model.Breed</span></li>
+                <li><span class="label">Age</span><span class="value">@Model.Age</span></li>
+                <li><span class="label">Gender</span><span class="value">@Model.Gender</span></li>
+                <li><span class="label">Color</span><span class="value">@Model.Color</span></li>
+                <li><span class="label">Spayed / Neutered</span><span class="value">@Model.SpayedNeutered</span></li>
+                <li><span class="label">Temperament</span><span class="value">@Model.Temperament</span></li>
+            </ul>
+
+            @if (!string.IsNullOrWhiteSpace(Model.SpecialNeeds))
+            {
+                <div class="card">
+                    <h4 class="mb-0">Special needs</h4>
+                    <p class="mb-0 mt-2">@Model.SpecialNeeds</p>
+                </div>
+            }
+
+            <div class="row mt-3">
+                <a class="btn btn-primary" asp-area="Admin" asp-controller="Pets" asp-action="Edit" asp-route-id="@Model.PetId">Edit pet</a>
+                <a class="btn btn-secondary" asp-area="Admin" asp-controller="Pets" asp-action="Index">&larr; Back to pets</a>
+            </div>
+        </div>
+    </div>
+
+    <section class="section" aria-labelledby="vet-history-heading">
+        <h2 id="vet-history-heading">Health record</h2>
+        @if (vetVisits.Count > 0)
+        {
+            @foreach (var visit in vetVisits)
+            {
+                <article class="visit-item">
+                    <div class="visit-head">
+                        <h4 class="mb-0">@visit.VisitType &middot; @visit.VisitDate.ToString("MMM d, yyyy")</h4>
+                        <span class="muted text-sm">@visit.VeterinarianName</span>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(visit.Diagnosis))
+                    {
+                        <p class="mb-0 mt-2"><strong>Diagnosis:</strong> @visit.Diagnosis</p>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(visit.GeneralNotes))
+                    {
+                        <p class="mb-0 mt-2">@visit.GeneralNotes</p>
+                    }
+                </article>
+            }
+        }
+        else
+        {
+            <p class="muted">No vet visits recorded yet.</p>
+        }
+    </section>
+}

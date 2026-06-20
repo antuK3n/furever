@@ -1,8 +1,8 @@
 @model FurEver.Web.Models.Pet?
 @*
     Compact pet reference for tables/lists: a small thumbnail plus the pet's name.
-    In the admin area it opens the pet's Edit modal (keeping staff inside the
-    panel); on the public site it links to the pet details page.
+    In the admin area it opens the pet's read-only Details modal (keeping staff
+    inside the panel); on the public site it links to the pet details page.
     Usage: <partial name="_PetThumbLink" model="adoption.Pet" />
 *@
 @{
@@ -22,8 +22,8 @@
 
     @if (inAdmin)
     {
-        <a class="pet-thumb-link" asp-area="Admin" asp-controller="Pets" asp-action="Edit" asp-route-id="@Model.PetId"
-           data-modal-url="@Url.Action("Edit", "Pets", new { area = "Admin", id = Model.PetId })">
+        <a class="pet-thumb-link" asp-area="Admin" asp-controller="Pets" asp-action="Details" asp-route-id="@Model.PetId"
+           data-modal-url="@Url.Action("Details", "Pets", new { area = "Admin", id = Model.PetId })">
             <span class="pet-thumb">
                 @if (!string.IsNullOrEmpty(Model.PhotoUrl))
                 {

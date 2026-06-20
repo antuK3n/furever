@@ -47,6 +47,20 @@ public class PetsController : Controller
         return View(model);
     }
 
+    // GET /Admin/Pets/Details/5 — read-only details for staff. Stays inside
+    // the admin panel (loaded into the admin modal); never links to the public
+    // adopter-facing pet page.
+    [HttpGet]
+    public async Task<IActionResult> Details(int id)
+    {
+        var pet = await _db.Pets
+            .Include(p => p.VetVisits)
+            .FirstOrDefaultAsync(p => p.PetId == id);
+        if (pet is null) return NotFound();
+
+        return View(pet);
+    }
+
     // GET /Admin/Pets/Create
     [HttpGet]
     public IActionResult Create() => View(new PetFormViewModel());

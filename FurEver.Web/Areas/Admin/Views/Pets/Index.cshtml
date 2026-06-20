@@ -59,6 +59,9 @@
                         <td><span class="badge badge-@pet.Status.ToLower().Replace(" ", "-")">@pet.Status</span></td>
                         <td class="actions-cell">
                             <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Pets"
+                               asp-action="Details" asp-route-id="@pet.PetId"
+                               data-modal-url="@Url.Action("Details", "Pets", new { area = "Admin", id = pet.PetId })">View</a>
+                            <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Pets"
                                asp-action="Edit" asp-route-id="@pet.PetId"
                                data-modal-url="@Url.Action("Edit", "Pets", new { area = "Admin", id = pet.PetId })">Edit</a>
                             <form asp-area="Admin" asp-controller="Pets" asp-action="Delete"
