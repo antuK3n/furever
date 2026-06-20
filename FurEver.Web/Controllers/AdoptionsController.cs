@@ -15,12 +15,10 @@ public class AdoptionsController : Controller
 
     public AdoptionsController(FurEverContext db) => _db = db;
 
-    // Flat adoption fee charged on every application (Philippine Pesos).
     public const decimal FlatAdoptionFee = 2000m;
 
     private int AdopterId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-    // GET /Adoptions — my applications (optionally filtered by status)
     public async Task<IActionResult> Index(string? status)
     {
         var all = await _db.Adoptions
@@ -46,7 +44,6 @@ public class AdoptionsController : Controller
         return View(model);
     }
 
-    // POST /Adoptions/Apply
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Apply(int petId)
     {
@@ -85,14 +82,12 @@ public class AdoptionsController : Controller
         }
         catch (DbUpdateException)
         {
-            // Trigger rejects non-available pets (race condition safety net)
             TempData["Error"] = "This pet is no longer available for adoption.";
         }
 
         return RedirectToAction("Details", "Pets", new { id = petId });
     }
 
-    // POST /Adoptions/Cancel — adopter cancels own pending application
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Cancel(int id)
     {

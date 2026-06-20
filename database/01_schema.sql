@@ -1,16 +1,9 @@
--- FurEver — SQL Server schema
--- Ported from MySQL pet_adoption_center database
-
 IF DB_ID('FurEver') IS NULL
     CREATE DATABASE FurEver;
 GO
 
 USE FurEver;
 GO
-
--- ============================================================
--- TABLES
--- ============================================================
 
 IF OBJECT_ID('dbo.Vaccination', 'U') IS NOT NULL DROP TABLE dbo.Vaccination;
 IF OBJECT_ID('dbo.Veterinary_Visit', 'U') IS NOT NULL DROP TABLE dbo.Veterinary_Visit;
@@ -147,18 +140,6 @@ CREATE TABLE dbo.Admin (
 );
 GO
 
--- ============================================================
--- TRIGGERS
--- SQL Server triggers are statement-level (no FOR EACH ROW),
--- so each body joins against the inserted/deleted pseudo-tables.
--- ============================================================
-
--- 1. Validate pet availability when an adoption is created, and
---    auto-fill completion fields when created directly as Completed.
---    (MySQL: trg_adoption_before_insert_validate, BEFORE INSERT)
---    Implemented as AFTER INSERT (a THROW here rolls the insert back).
---    NOTE: must NOT be INSTEAD OF — EF Core reads scope_identity()
---    right after the INSERT, which an INSTEAD OF trigger breaks.
 CREATE OR ALTER TRIGGER dbo.trg_adoption_validate_insert
 ON dbo.Adoption
 AFTER INSERT
@@ -176,7 +157,6 @@ BEGIN
         THROW 50001, 'This pet is not available for adoption.', 1;
     END
 
-    -- Auto-fill adoption date / contract when created directly as Completed
     UPDATE a
     SET a.Adoption_Date   = ISNULL(a.Adoption_Date, CAST(GETDATE() AS DATE)),
         a.Contract_Signed = 'Yes'
@@ -186,16 +166,12 @@ BEGIN
 END;
 GO
 
--- Validation must run before trg_adoption_after_insert flips the pet
--- to Reserved/Adopted (otherwise it would reject its own insert).
 EXEC sp_settriggerorder
     @triggername = 'dbo.trg_adoption_validate_insert',
     @order = 'First',
     @stmttype = 'INSERT';
 GO
 
--- 2. After insert: reserve or mark pet adopted.
---    (MySQL: trg_adoption_after_insert)
 CREATE OR ALTER TRIGGER dbo.trg_adoption_after_insert
 ON dbo.Adoption
 AFTER INSERT
@@ -214,8 +190,6 @@ BEGIN
 END;
 GO
 
--- 3 + 4. On update: auto-fill completion fields, then sync pet status.
---    (MySQL: trg_adoption_before_update + trg_adoption_after_update, merged)
 CREATE OR ALTER TRIGGER dbo.trg_adoption_after_update
 ON dbo.Adoption
 AFTER UPDATE
@@ -223,8 +197,6 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- BEFORE-update behaviour: fill Adoption_Date + Contract_Signed
-    -- when transitioning into Completed.
     UPDATE a
     SET a.Adoption_Date   = ISNULL(a.Adoption_Date, CAST(GETDATE() AS DATE)),
         a.Contract_Signed = 'Yes'
@@ -233,12 +205,11 @@ BEGIN
     JOIN deleted  d ON d.Adoption_ID = a.Adoption_ID
     WHERE i.Status = 'Completed' AND d.Status <> 'Completed';
 
-    -- AFTER-update behaviour: sync Pet.Status with the new adoption status.
     UPDATE p
     SET p.Status = CASE i.Status
                        WHEN 'Completed' THEN 'Adopted'
                        WHEN 'Pending'   THEN 'Reserved'
-                       ELSE 'Available'   -- Returned / Cancelled
+                       ELSE 'Available'
                    END
     FROM dbo.Pet p
     JOIN inserted i ON i.Pet_ID = p.Pet_ID
@@ -247,8 +218,6 @@ BEGIN
 END;
 GO
 
--- 5. After delete: free the pet again.
---    (MySQL: trg_adoption_after_delete)
 CREATE OR ALTER TRIGGER dbo.trg_adoption_after_delete
 ON dbo.Adoption
 AFTER DELETE
@@ -264,8 +233,6 @@ BEGIN
 END;
 GO
 
--- 6. When a pet becomes Adopted, clear it from everyone's favorites.
---    (MySQL: trg_pet_after_update_cleanup_favorites)
 CREATE OR ALTER TRIGGER dbo.trg_pet_cleanup_favorites
 ON dbo.Pet
 AFTER UPDATE
@@ -281,12 +248,6 @@ BEGIN
 END;
 GO
 
--- ============================================================
--- STORED PROCEDURES
--- ============================================================
-
--- 1. Available pets filtered by species.
---    (MySQL: sp_get_available_pets_by_species)
 CREATE OR ALTER PROCEDURE dbo.sp_get_available_pets_by_species
     @p_species NVARCHAR(30)
 AS
@@ -301,8 +262,6 @@ BEGIN
 END;
 GO
 
--- 2. Monthly adoption statistics.
---    (MySQL: sp_monthly_adoption_stats)
 CREATE OR ALTER PROCEDURE dbo.sp_monthly_adoption_stats
     @p_year  INT,
     @p_month INT
@@ -322,13 +281,6 @@ BEGIN
       AND MONTH(Application_Date) = @p_month;
 END;
 GO
-
--- ============================================================
--- SCHEDULED JOB EQUIVALENT
--- MySQL used a daily EVENT (evt_update_overdue_vaccinations).
--- SQL Server Express in Docker has no SQL Agent, so the app calls
--- this procedure on startup / before vaccination queries instead.
--- ============================================================
 
 CREATE OR ALTER PROCEDURE dbo.sp_update_overdue_vaccinations
 AS

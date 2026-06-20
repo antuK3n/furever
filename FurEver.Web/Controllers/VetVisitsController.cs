@@ -10,7 +10,6 @@ public class VetVisitsController : Controller
 
     public VetVisitsController(FurEverContext db) => _db = db;
 
-    // GET /VetVisits — public read-only transparency page
     public async Task<IActionResult> Index(string? visitType)
     {
         var query = _db.VetVisits

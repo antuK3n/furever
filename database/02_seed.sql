@@ -1,10 +1,3 @@
--- ============================================================
--- FurEver sample data
--- Run after 01_schema.sql. Idempotent: skips if pets exist.
--- Note: the Admin user is seeded by the app on startup
--- (BCrypt hash generated in C#).
--- ============================================================
-
 USE FurEver;
 GO
 
@@ -14,7 +7,6 @@ BEGIN
     RETURN;
 END
 
--- ---------- Pets ----------
 SET IDENTITY_INSERT dbo.Pet ON;
 
 INSERT INTO dbo.Pet
@@ -34,7 +26,6 @@ VALUES
 
 SET IDENTITY_INSERT dbo.Pet OFF;
 
--- ---------- Veterinary visits ----------
 SET IDENTITY_INSERT dbo.Veterinary_Visit ON;
 
 INSERT INTO dbo.Veterinary_Visit
@@ -54,7 +45,6 @@ VALUES
 
 SET IDENTITY_INSERT dbo.Veterinary_Visit OFF;
 
--- ---------- Vaccinations ----------
 SET IDENTITY_INSERT dbo.Vaccination ON;
 
 INSERT INTO dbo.Vaccination

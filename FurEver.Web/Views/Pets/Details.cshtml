@@ -10,7 +10,6 @@
         "bird" => "bird",
         _ => "heart"
     };
-    // Show the "add a note" popup right after a pet is favorited.
     var justFavorited = TempData["JustFavorited"] is int favPetId
         && favPetId == pet.PetId
         && Model.IsFavorited

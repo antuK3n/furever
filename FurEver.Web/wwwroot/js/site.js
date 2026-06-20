@@ -1,8 +1,4 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
-// Logout confirmation modal.
-(function () {
+﻿(function () {
     var dialog = document.getElementById('logout-dialog');
     if (!dialog) return;
 
@@ -30,13 +26,11 @@
         btn.addEventListener('click', close);
     });
 
-    // Click on the backdrop (outside the card) dismisses the dialog.
     dialog.addEventListener('click', function (e) {
         if (e.target === dialog) close();
     });
 })();
 
-// Generic dialog helpers.
 function openDialog(dialog) {
     if (!dialog) return;
     if (typeof dialog.showModal === 'function') dialog.showModal();
@@ -48,8 +42,6 @@ function closeDialog(dialog) {
     else dialog.removeAttribute('open');
 }
 
-// Confirmation modal — replaces native confirm() for forms marked
-// with data-confirm (e.g. delete buttons).
 (function () {
     var dialog = document.getElementById('confirm-dialog');
     if (!dialog) return;
@@ -65,7 +57,7 @@ function closeDialog(dialog) {
         if (!form.hasAttribute || !form.hasAttribute('data-confirm')) return;
         if (form.dataset.confirmed === 'true') {
             form.removeAttribute('data-confirmed');
-            return; // allow the real submit through
+            return;
         }
         e.preventDefault();
         pendingForm = form;
@@ -91,8 +83,6 @@ function closeDialog(dialog) {
     });
 })();
 
-// Admin add/edit modal — fetches a form fragment and shows it in a dialog
-// instead of navigating to a separate page.
 (function () {
     var dialog = document.getElementById('admin-modal');
     if (!dialog) return;
@@ -129,8 +119,6 @@ function closeDialog(dialog) {
     });
 })();
 
-// Live filtering for the "Find a pet" page. Selects auto-submit the GET form;
-// the search box filters the already-rendered cards instantly.
 (function () {
     var form = document.querySelector('[data-pet-filter]');
     if (!form) return;
@@ -166,8 +154,6 @@ function closeDialog(dialog) {
     input.addEventListener('input', apply);
 })();
 
-// Generic dialog triggers — any element with data-dialog-open="some-id"
-// opens that <dialog>; [data-dialog-close] or a backdrop click closes it.
 (function () {
     document.addEventListener('click', function (e) {
         var opener = e.target.closest ? e.target.closest('[data-dialog-open]') : null;
@@ -190,7 +176,6 @@ function closeDialog(dialog) {
     });
 })();
 
-// Shrink large stat figures (e.g. revenue) so they never overflow their card.
 (function () {
     var values = Array.prototype.slice.call(document.querySelectorAll('.stat-value'));
     if (!values.length) return;

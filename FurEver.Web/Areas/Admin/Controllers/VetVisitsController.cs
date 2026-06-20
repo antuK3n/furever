@@ -15,7 +15,6 @@ public class VetVisitsController : Controller
 
     public VetVisitsController(FurEverContext db) => _db = db;
 
-    // GET /Admin/VetVisits
     public async Task<IActionResult> Index(string? visitType, int? petId)
     {
         var query = _db.VetVisits.Include(v => v.Pet).AsQueryable();
@@ -39,7 +38,6 @@ public class VetVisitsController : Controller
         return View(model);
     }
 
-    // GET /Admin/VetVisits/Details/5 — visit + its vaccinations
     public async Task<IActionResult> Details(int id)
     {
         var visit = await _db.VetVisits
@@ -51,7 +49,6 @@ public class VetVisitsController : Controller
         return View(visit);
     }
 
-    // GET /Admin/VetVisits/Create
     [HttpGet]
     public async Task<IActionResult> Create(int? petId)
     {
@@ -63,7 +60,6 @@ public class VetVisitsController : Controller
         });
     }
 
-    // POST /Admin/VetVisits/Create
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(VeterinaryVisit visit)
     {
@@ -81,7 +77,6 @@ public class VetVisitsController : Controller
         return RedirectToAction(nameof(Details), new { id = visit.VisitId });
     }
 
-    // GET /Admin/VetVisits/Edit/5
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
@@ -92,7 +87,6 @@ public class VetVisitsController : Controller
         return View(visit);
     }
 
-    // POST /Admin/VetVisits/Edit/5
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, VeterinaryVisit model)
     {
@@ -123,7 +117,6 @@ public class VetVisitsController : Controller
         return RedirectToAction(nameof(Details), new { id });
     }
 
-    // POST /Admin/VetVisits/Delete/5
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {

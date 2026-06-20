@@ -84,7 +84,6 @@ public class AdminVetVisitListViewModel
     public List<Pet> PetOptions { get; set; } = new();
 }
 
-// Maps the result set of dbo.sp_monthly_adoption_stats.
 public class MonthlyAdoptionStats
 {
     [Column("Total_Adoptions")]
@@ -110,10 +109,8 @@ public class ReportsViewModel
     public MonthlyAdoptionStats? Stats { get; set; }
     public List<SpeciesCount> SpeciesBreakdown { get; set; } = new();
 
-    // Adoption Management Report — full join across adoptions, pets, and adopters.
     public List<Adoption> AllAdoptions { get; set; } = new();
 
-    // Average fee across completed adoptions (0 when none completed).
     public decimal AverageFee { get; set; }
 }
 

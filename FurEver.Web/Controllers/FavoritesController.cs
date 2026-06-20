@@ -16,7 +16,6 @@ public class FavoritesController : Controller
 
     private int AdopterId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-    // GET /Favorites
     public async Task<IActionResult> Index()
     {
         var favorites = await _db.Favorites
@@ -28,7 +27,6 @@ public class FavoritesController : Controller
         return View(favorites);
     }
 
-    // POST /Favorites/Add
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Add(int petId)
     {
@@ -38,15 +36,12 @@ public class FavoritesController : Controller
             _db.Favorites.Add(new Favorite { AdopterId = AdopterId, PetId = petId });
             await _db.SaveChangesAsync();
 
-            // Signal the pet page to pop up the "add a note" modal for the
-            // pet that was just favorited.
             TempData["JustFavorited"] = petId;
         }
 
         return RedirectToAction("Details", "Pets", new { id = petId });
     }
 
-    // POST /Favorites/Remove
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Remove(int id, string? returnTo)
     {
@@ -66,7 +61,6 @@ public class FavoritesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // POST /Favorites/UpdateNotes
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateNotes(int id, string? notes, string? returnTo, int? petId)
     {

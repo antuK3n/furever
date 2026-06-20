@@ -14,10 +14,8 @@ public class VaccinationsController : Controller
 
     public VaccinationsController(FurEverContext db) => _db = db;
 
-    // GET /Admin/Vaccinations — overview, overdue first
     public async Task<IActionResult> Index(string? status)
     {
-        // Keep statuses fresh (replaces the MySQL daily event).
         await _db.Database.ExecuteSqlRawAsync("EXEC dbo.sp_update_overdue_vaccinations");
 
         var query = _db.Vaccinations
@@ -34,7 +32,6 @@ public class VaccinationsController : Controller
             .ToListAsync());
     }
 
-    // GET /Admin/Vaccinations/Create?visitId=5
     [HttpGet]
     public async Task<IActionResult> Create(int visitId)
     {
@@ -45,7 +42,6 @@ public class VaccinationsController : Controller
         return View(new Vaccination { VisitId = visitId });
     }
 
-    // POST /Admin/Vaccinations/Create
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Vaccination vaccination)
     {
@@ -64,7 +60,6 @@ public class VaccinationsController : Controller
         return RedirectToAction("Details", "VetVisits", new { id = vaccination.VisitId });
     }
 
-    // GET /Admin/Vaccinations/Edit/5
     [HttpGet]
     public async Task<IActionResult> Edit(int id, string? returnUrl)
     {
@@ -78,7 +73,6 @@ public class VaccinationsController : Controller
         return View(vaccination);
     }
 
-    // POST /Admin/Vaccinations/Edit/5
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, Vaccination model, string? returnUrl)
     {
@@ -108,14 +102,11 @@ public class VaccinationsController : Controller
 
         TempData["Success"] = "Vaccination updated.";
 
-        // Return to wherever the edit was launched from (the vaccinations list
-        // or the vet visit details page); fall back to the visit details page.
         if (Url.IsLocalUrl(returnUrl))
             return Redirect(returnUrl);
         return RedirectToAction("Details", "VetVisits", new { id = vaccination.VisitId });
     }
 
-    // POST /Admin/Vaccinations/Delete/5
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {

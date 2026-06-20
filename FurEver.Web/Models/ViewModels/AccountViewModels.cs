@@ -87,7 +87,6 @@ public class ProfileViewModel
 
     public string Email { get; set; } = string.Empty;
 
-    // ----- Optional password change -----
     [DataType(DataType.Password)]
     [Display(Name = "Current Password")]
     public string? CurrentPassword { get; set; }
@@ -102,7 +101,6 @@ public class ProfileViewModel
     [Display(Name = "Confirm New Password")]
     public string? ConfirmNewPassword { get; set; }
 
-    // ----- Quick stats (read-only, populated on GET) -----
     public int TotalApplications { get; set; }
     public int CompletedAdoptions { get; set; }
     public int PendingApplications { get; set; }

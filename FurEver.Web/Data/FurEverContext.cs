@@ -31,8 +31,6 @@ public class FurEverContext : DbContext
             .HasIndex(f => new { f.AdopterId, f.PetId })
             .IsUnique();
 
-        // Adoption has triggers attached — tell EF Core so it uses
-        // a compatible save strategy (no OUTPUT clause).
         modelBuilder.Entity<Adoption>()
             .ToTable(tb =>
             {
@@ -44,11 +42,5 @@ public class FurEverContext : DbContext
 
         modelBuilder.Entity<Pet>()
             .ToTable(tb => tb.HasTrigger("trg_pet_cleanup_favorites"));
-
-        // Cascade paths: SQL Server disallows multiple cascade paths.
-        // Favorite cascades from both Adopter and Pet; Adoption too.
-        // Keep cascade on Pet side, restrict on Adopter where needed
-        // is NOT what MySQL did — both cascaded. SQL Server allows this
-        // here because the paths don't conflict (no shared subtree).
     }
 }

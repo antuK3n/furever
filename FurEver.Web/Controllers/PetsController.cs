@@ -12,9 +12,6 @@ public class PetsController : Controller
 
     public PetsController(FurEverContext db) => _db = db;
 
-    // GET /Pets
-    // Defaults to "Available" pets. Visitors can opt into other statuses
-    // (Reserved / Adopted / Medical Hold) or "All" by changing the filter.
     public async Task<IActionResult> Index(string? species, string? search, string? status)
     {
         var effectiveStatus = string.IsNullOrWhiteSpace(status) ? "Available" : status;
@@ -53,7 +50,6 @@ public class PetsController : Controller
         });
     }
 
-    // GET /Pets/Details/5
     public async Task<IActionResult> Details(int id)
     {
         var pet = await _db.Pets.FindAsync(id);

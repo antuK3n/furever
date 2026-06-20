@@ -14,7 +14,6 @@ public class AdoptionsController : Controller
 
     public AdoptionsController(FurEverContext db) => _db = db;
 
-    // GET /Admin/Adoptions
     public async Task<IActionResult> Index(string? status)
     {
         var baseQuery = _db.Adoptions
@@ -42,7 +41,6 @@ public class AdoptionsController : Controller
         return View(model);
     }
 
-    // POST /Admin/Adoptions/UpdateFee — adjust the fee on a pending application.
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateFee(int id, decimal fee)
     {
@@ -68,14 +66,12 @@ public class AdoptionsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // POST /Admin/Adoptions/Delete — permanently remove an adoption record.
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
         var adoption = await _db.Adoptions.FirstOrDefaultAsync(a => a.AdoptionId == id);
         if (adoption is null) return NotFound();
 
-        // The adoption-delete trigger frees the pet if it was reserved/adopted.
         _db.Adoptions.Remove(adoption);
         await _db.SaveChangesAsync();
 
@@ -83,9 +79,6 @@ public class AdoptionsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // POST /Admin/Adoptions/Approve — Pending -> Completed.
-    // The DB trigger fills Adoption_Date + Contract_Signed and
-    // marks the pet Adopted (which also clears favorites).
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Approve(int id, decimal fee)
     {
@@ -112,7 +105,6 @@ public class AdoptionsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // POST /Admin/Adoptions/Reject — Pending -> Cancelled (frees the pet).
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Reject(int id)
     {
@@ -132,7 +124,6 @@ public class AdoptionsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // POST /Admin/Adoptions/Return — Completed -> Returned (frees the pet).
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Return(int id)
     {

@@ -10,7 +10,7 @@ namespace FurEver.Web.Areas.Admin.Controllers;
 [Authorize(Roles = "Admin")]
 public class PetsController : Controller
 {
-    private const long MaxPhotoBytes = 5 * 1024 * 1024; // 5 MB
+    private const long MaxPhotoBytes = 5 * 1024 * 1024;
     private static readonly string[] AllowedPhotoTypes =
         { "image/jpeg", "image/png", "image/gif", "image/webp" };
 
@@ -23,7 +23,6 @@ public class PetsController : Controller
         _env = env;
     }
 
-    // GET /Admin/Pets
     public async Task<IActionResult> Index(string? species, string? status, string? search)
     {
         var query = _db.Pets.AsQueryable();
@@ -47,9 +46,6 @@ public class PetsController : Controller
         return View(model);
     }
 
-    // GET /Admin/Pets/Details/5 — read-only details for staff. Stays inside
-    // the admin panel (loaded into the admin modal); never links to the public
-    // adopter-facing pet page.
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
@@ -61,11 +57,9 @@ public class PetsController : Controller
         return View(pet);
     }
 
-    // GET /Admin/Pets/Create
     [HttpGet]
     public IActionResult Create() => View(new PetFormViewModel());
 
-    // POST /Admin/Pets/Create
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(PetFormViewModel model)
     {
@@ -82,7 +76,6 @@ public class PetsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // GET /Admin/Pets/Edit/5
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
@@ -92,7 +85,6 @@ public class PetsController : Controller
         return View(new PetFormViewModel { Pet = pet });
     }
 
-    // POST /Admin/Pets/Edit/5
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, PetFormViewModel model)
     {
@@ -131,7 +123,6 @@ public class PetsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // POST /Admin/Pets/Delete/5
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
@@ -145,8 +136,6 @@ public class PetsController : Controller
         TempData["Success"] = $"{pet.PetName} removed.";
         return RedirectToAction(nameof(Index));
     }
-
-    // ---------- Photo helpers ----------
 
     private void ValidatePhoto(IFormFile? photo)
     {

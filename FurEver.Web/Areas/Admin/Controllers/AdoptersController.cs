@@ -14,7 +14,6 @@ public class AdoptersController : Controller
 
     public AdoptersController(FurEverContext db) => _db = db;
 
-    // GET /Admin/Adopters
     public async Task<IActionResult> Index(string? search)
     {
         var query = _db.Adopters.AsQueryable();
@@ -36,7 +35,6 @@ public class AdoptersController : Controller
         return View(rows);
     }
 
-    // GET /Admin/Adopters/Details/5
     public async Task<IActionResult> Details(int id)
     {
         var adopter = await _db.Adopters
@@ -48,7 +46,6 @@ public class AdoptersController : Controller
         return View(adopter);
     }
 
-    // GET /Admin/Adopters/Edit/5
     public async Task<IActionResult> Edit(int id)
     {
         var adopter = await _db.Adopters.FindAsync(id);
@@ -68,7 +65,6 @@ public class AdoptersController : Controller
         });
     }
 
-    // POST /Admin/Adopters/Edit/5
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, AdminAdopterEditViewModel model)
     {
@@ -77,7 +73,6 @@ public class AdoptersController : Controller
 
         if (!ModelState.IsValid) return View(model);
 
-        // Guard against assigning an email already used by another adopter.
         var emailTaken = await _db.Adopters
             .AnyAsync(a => a.Email == model.Email && a.AdopterId != id);
         if (emailTaken)
@@ -100,7 +95,6 @@ public class AdoptersController : Controller
         return RedirectToAction(nameof(Details), new { id });
     }
 
-    // POST /Admin/Adopters/Delete/5
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
@@ -111,11 +105,6 @@ public class AdoptersController : Controller
 
         var name = adopter.FullName;
 
-        // Remove the adoptions explicitly so EF issues a DELETE per row. A raw
-        // FK cascade would drop the rows without firing trg_adoption_after_delete,
-        // leaving the adopter's pets stuck as Reserved/Adopted. Deleting the
-        // adoption rows individually fires the trigger, freeing those pets back
-        // to Available. Favorites are still removed by the FK cascade.
         _db.Adoptions.RemoveRange(adopter.Adoptions);
         _db.Adopters.Remove(adopter);
         await _db.SaveChangesAsync();

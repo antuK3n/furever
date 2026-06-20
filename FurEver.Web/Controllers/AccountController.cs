@@ -16,8 +16,6 @@ public class AccountController : Controller
 
     public AccountController(FurEverContext db) => _db = db;
 
-    // ---------- Register ----------
-
     [HttpGet]
     public IActionResult Register()
     {
@@ -58,8 +56,6 @@ public class AccountController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-    // ---------- Login ----------
-
     [HttpGet]
     public IActionResult Login(string? returnUrl = null)
     {
@@ -72,8 +68,6 @@ public class AccountController : Controller
     {
         if (!ModelState.IsValid) return View(model);
 
-        // Member login authenticates ONLY against the Adopter table.
-        // Admins sign in through the separate /Admin/Login page.
         var adopter = await _db.Adopters.FirstOrDefaultAsync(a => a.Email == model.Email);
         if (adopter is not null && BCrypt.Net.BCrypt.Verify(model.Password, adopter.PasswordHash))
         {
@@ -89,16 +83,12 @@ public class AccountController : Controller
         return View(model);
     }
 
-    // ---------- Logout ----------
-
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("Index", "Home");
     }
-
-    // ---------- Profile ----------
 
     [Authorize(Roles = "Adopter")]
     [HttpGet]
@@ -131,7 +121,6 @@ public class AccountController : Controller
         var adopter = await CurrentAdopterAsync();
         if (adopter is null) return RedirectToAction(nameof(Login));
 
-        // Password change is optional; validate only when requested.
         var wantsPasswordChange =
             !string.IsNullOrEmpty(model.CurrentPassword) ||
             !string.IsNullOrEmpty(model.NewPassword) ||
@@ -167,8 +156,6 @@ public class AccountController : Controller
 
         await _db.SaveChangesAsync();
 
-        // Re-issue the auth cookie so claims (e.g. the name shown in the
-        // "Hi, Name" greeting) reflect the updated profile immediately.
         await SignInAdopterAsync(adopter);
 
         TempData["Success"] = wantsPasswordChange ? "Profile and password updated." : "Profile updated.";
@@ -197,8 +184,6 @@ public class AccountController : Controller
             .Take(4)
             .ToListAsync();
     }
-
-    // ---------- Helpers ----------
 
     private async Task SignInAdopterAsync(Adopter adopter)
     {

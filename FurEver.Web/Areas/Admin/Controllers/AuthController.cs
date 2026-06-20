@@ -32,7 +32,6 @@ public class AuthController : Controller
     {
         if (!ModelState.IsValid) return View(model);
 
-        // Admin login authenticates ONLY against the Admin table.
         var admin = await _db.Admins.FirstOrDefaultAsync(a => a.Email == model.Email);
         if (admin is not null && BCrypt.Net.BCrypt.Verify(model.Password, admin.PasswordHash))
         {

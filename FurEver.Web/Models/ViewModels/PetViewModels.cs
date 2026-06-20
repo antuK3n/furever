@@ -5,8 +5,6 @@ public class HomeViewModel
     public List<PetWithCount> PopularPets { get; set; } = new();
     public List<Pet> NewArrivals { get; set; } = new();
 
-    // Fallback shown when there are no favorited or recently-arrived pets yet,
-    // so the home page still surfaces adoptable pets instead of an empty state.
     public List<Pet> AvailablePets { get; set; } = new();
 }
 

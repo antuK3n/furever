@@ -5,8 +5,6 @@ using FurEver.Web.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// FurEver operates in the Philippines — render all currency ("C" format)
-// as Philippine Pesos (₱) regardless of the host machine's locale.
 var phCulture = new CultureInfo("en-PH");
 CultureInfo.DefaultThreadCurrentCulture = phCulture;
 CultureInfo.DefaultThreadCurrentUICulture = phCulture;
@@ -25,8 +23,6 @@ builder.Services
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
         options.SlidingExpiration = true;
 
-        // Admin URLs bounce to the admin login; everything else uses the
-        // member login. Applies to both "not signed in" and "wrong role".
         options.Events.OnRedirectToLogin = context =>
         {
             if (context.Request.Path.StartsWithSegments("/Admin"))
@@ -67,9 +63,6 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Prevent the browser (and its back/forward cache) from storing authenticated
-// pages. Without this, pressing Back after logout would show a cached admin
-// page. `no-store` is what disables Chrome's bfcache.
 app.Use(async (context, next) =>
 {
     if (context.User.Identity?.IsAuthenticated == true)
@@ -92,10 +85,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-// Startup database tasks:
-// 1. Seed the default admin account (BCrypt hash must be generated in C#).
-// 2. Mark overdue vaccinations (replaces the MySQL daily event;
-//    SQL Server Express has no Agent).
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<FurEverContext>();

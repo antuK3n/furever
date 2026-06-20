@@ -1,10 +1,4 @@
 @model FurEver.Web.Models.Pet?
-@*
-    Compact pet reference for tables/lists: a small thumbnail plus the pet's name.
-    In the admin area it opens the pet's read-only Details modal (keeping staff
-    inside the panel); on the public site it links to the pet details page.
-    Usage: <partial name="_PetThumbLink" model="adoption.Pet" />
-*@
 @{
     var area = ViewContext.RouteData.Values["area"]?.ToString();
     var inAdmin = string.Equals(area, "Admin", StringComparison.OrdinalIgnoreCase);

@@ -1,9 +1,4 @@
 @model string
-@*
-    Hand-drawn line-art glyphs for the crayon design system.
-    Usage: <partial name="_Glyph" model='"dog"' />
-    Strokes inherit currentColor; size via CSS on .glyph.
-*@
 <svg class="glyph glyph-@Model" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
     @switch (Model)
     {

@@ -14,7 +14,6 @@ public class ReportsController : Controller
 
     public ReportsController(FurEverContext db) => _db = db;
 
-    // GET /Admin/Reports?year=2026&month=6
     public async Task<IActionResult> Index(int? year, int? month)
     {
         var today = DateTime.Today;
@@ -24,7 +23,6 @@ public class ReportsController : Controller
             Month = month ?? today.Month
         };
 
-        // Monthly stats via the stored procedure (ported from MySQL).
         var stats = await _db.Database
             .SqlQuery<MonthlyAdoptionStats>(
                 $"EXEC dbo.sp_monthly_adoption_stats @p_year = {model.Year}, @p_month = {model.Month}")
@@ -42,7 +40,6 @@ public class ReportsController : Controller
             .OrderByDescending(s => s.Total)
             .ToListAsync();
 
-        // Adoption Management Report — every application with pet + adopter detail.
         model.AllAdoptions = await _db.Adoptions
             .Include(a => a.Pet)
             .Include(a => a.Adopter)
@@ -50,7 +47,6 @@ public class ReportsController : Controller
             .ThenByDescending(a => a.AdoptionId)
             .ToListAsync();
 
-        // Average fee across completed adoptions that have a fee recorded.
         var completedFees = await _db.Adoptions
             .Where(a => a.Status == "Completed" && a.AdoptionFee != null)
             .Select(a => a.AdoptionFee!.Value)

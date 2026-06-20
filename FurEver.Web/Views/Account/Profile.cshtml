@@ -182,8 +182,6 @@
         </div>
 
         <form asp-action="Profile" method="post">
-            @* Carry the current profile values so the shared Profile action
-               still validates when only the password is being changed. *@
             <input type="hidden" asp-for="FullName" />
             <input type="hidden" asp-for="ContactNo" />
             <input type="hidden" asp-for="Address" />
