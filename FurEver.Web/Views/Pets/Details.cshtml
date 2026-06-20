@@ -10,6 +10,11 @@
         "bird" => "bird",
         _ => "heart"
     };
+    // Show the "add a note" popup right after a pet is favorited.
+    var justFavorited = TempData["JustFavorited"] is int favPetId
+        && favPetId == pet.PetId
+        && Model.IsFavorited
+        && Model.FavoriteId.HasValue;
 }
 
 <div class="detail-grid">
@@ -152,3 +157,37 @@
         <p class="muted">No vet visits recorded yet for @pet.PetName.</p>
     }
 </section>
+
+@if (justFavorited)
+{
+    <dialog id="favorite-note-dialog" class="modal" data-dialog aria-labelledby="favorite-note-title">
+        <div class="modal-card">
+            <h2 id="favorite-note-title" class="modal-title">Added to favorites</h2>
+            <p class="modal-body">Want to jot down a note about @pet.PetName? You can always edit it later from your Favorites.</p>
+            <form asp-controller="Favorites" asp-action="UpdateNotes" method="post">
+                <input type="hidden" name="id" value="@Model.FavoriteId" />
+                <input type="hidden" name="returnTo" value="pet" />
+                <input type="hidden" name="petId" value="@pet.PetId" />
+                <div class="field">
+                    <label for="favorite-note">Note</label>
+                    <textarea id="favorite-note" name="notes" rows="3" placeholder="e.g. Ask about @pet.PetName's energy level"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" data-dialog-close>Skip for now</button>
+                    <button type="submit" class="btn btn-primary">Save note</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    @section Scripts {
+        <script>
+            (function () {
+                var dlg = document.getElementById('favorite-note-dialog');
+                if (dlg && typeof dlg.showModal === 'function') {
+                    dlg.showModal();
+                }
+            })();
+        </script>
+    }
+}

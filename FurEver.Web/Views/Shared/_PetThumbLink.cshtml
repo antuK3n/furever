@@ -1,9 +1,14 @@
 @model FurEver.Web.Models.Pet?
 @*
-    Compact pet reference for admin tables/lists: a small thumbnail plus the
-    pet's name, linking to the public pet details page.
+    Compact pet reference for tables/lists: a small thumbnail plus the pet's name.
+    In the admin area it opens the pet's Edit modal (keeping staff inside the
+    panel); on the public site it links to the pet details page.
     Usage: <partial name="_PetThumbLink" model="adoption.Pet" />
 *@
+@{
+    var area = ViewContext.RouteData.Values["area"]?.ToString();
+    var inAdmin = string.Equals(area, "Admin", StringComparison.OrdinalIgnoreCase);
+}
 @if (Model is not null)
 {
     var glyph = Model.Species?.ToLowerInvariant() switch
@@ -15,19 +20,39 @@
         _ => "heart"
     };
 
-    <a class="pet-thumb-link" asp-area="" asp-controller="Pets" asp-action="Details" asp-route-id="@Model.PetId">
-        <span class="pet-thumb">
-            @if (!string.IsNullOrEmpty(Model.PhotoUrl))
-            {
-                <img src="@Model.PhotoUrl" alt="@Model.PetName" loading="lazy" />
-            }
-            else
-            {
-                <span class="pet-thumb-placeholder" aria-hidden="true"><partial name="_Glyph" model="glyph" /></span>
-            }
-        </span>
-        <strong>@Model.PetName</strong>
-    </a>
+    @if (inAdmin)
+    {
+        <a class="pet-thumb-link" asp-area="Admin" asp-controller="Pets" asp-action="Edit" asp-route-id="@Model.PetId"
+           data-modal-url="@Url.Action("Edit", "Pets", new { area = "Admin", id = Model.PetId })">
+            <span class="pet-thumb">
+                @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+                {
+                    <img src="@Model.PhotoUrl" alt="@Model.PetName" loading="lazy" />
+                }
+                else
+                {
+                    <span class="pet-thumb-placeholder" aria-hidden="true"><partial name="_Glyph" model="glyph" /></span>
+                }
+            </span>
+            <strong>@Model.PetName</strong>
+        </a>
+    }
+    else
+    {
+        <a class="pet-thumb-link" asp-area="" asp-controller="Pets" asp-action="Details" asp-route-id="@Model.PetId">
+            <span class="pet-thumb">
+                @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+                {
+                    <img src="@Model.PhotoUrl" alt="@Model.PetName" loading="lazy" />
+                }
+                else
+                {
+                    <span class="pet-thumb-placeholder" aria-hidden="true"><partial name="_Glyph" model="glyph" /></span>
+                }
+            </span>
+            <strong>@Model.PetName</strong>
+        </a>
+    }
 }
 else
 {

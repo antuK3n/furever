@@ -63,7 +63,23 @@
     </div>
 }
 
-@if (Model.PopularPets.Count == 0 && Model.NewArrivals.Count == 0)
+@if (Model.PopularPets.Count == 0 && Model.NewArrivals.Count == 0 && Model.AvailablePets.Count > 0)
+{
+    <div class="section" role="region" aria-labelledby="available-heading">
+        <div class="section-head">
+            <h2 id="available-heading">Available for adoption</h2>
+            <a asp-controller="Pets" asp-action="Index">See all pets &rarr;</a>
+        </div>
+        <div class="pet-grid">
+            @foreach (var pet in Model.AvailablePets)
+            {
+                <partial name="_PetCard" model="pet" />
+            }
+        </div>
+    </div>
+}
+
+@if (Model.PopularPets.Count == 0 && Model.NewArrivals.Count == 0 && Model.AvailablePets.Count == 0)
 {
     <div class="empty-state">
         <div class="empty-glyph" aria-hidden="true"><partial name="_Glyph" model='"house"' /></div>

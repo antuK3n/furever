@@ -41,10 +41,25 @@ public class HomeController : Controller
             .Take(5)
             .ToListAsync();
 
+        // Fallback: when nothing is favorited yet and there are no recent
+        // arrivals, still showcase available pets so the home page is never
+        // "empty" while adoptable pets exist.
+        var availablePets = new List<Pet>();
+        if (popular.Count == 0 && newArrivals.Count == 0)
+        {
+            availablePets = await _db.Pets
+                .Where(p => p.Status == "Available")
+                .OrderByDescending(p => p.DateArrived)
+                .ThenByDescending(p => p.PetId)
+                .Take(8)
+                .ToListAsync();
+        }
+
         return View(new HomeViewModel
         {
             PopularPets = popular,
-            NewArrivals = newArrivals
+            NewArrivals = newArrivals,
+            AvailablePets = availablePets
         });
     }
 

@@ -167,6 +167,10 @@ public class AccountController : Controller
 
         await _db.SaveChangesAsync();
 
+        // Re-issue the auth cookie so claims (e.g. the name shown in the
+        // "Hi, Name" greeting) reflect the updated profile immediately.
+        await SignInAdopterAsync(adopter);
+
         TempData["Success"] = wantsPasswordChange ? "Profile and password updated." : "Profile updated.";
         return RedirectToAction(nameof(Profile));
     }
