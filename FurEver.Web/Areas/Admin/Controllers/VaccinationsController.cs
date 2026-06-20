@@ -66,7 +66,7 @@ public class VaccinationsController : Controller
 
     // GET /Admin/Vaccinations/Edit/5
     [HttpGet]
-    public async Task<IActionResult> Edit(int id)
+    public async Task<IActionResult> Edit(int id, string? returnUrl)
     {
         var vaccination = await _db.Vaccinations
             .Include(v => v.Visit).ThenInclude(visit => visit!.Pet)
@@ -74,12 +74,13 @@ public class VaccinationsController : Controller
         if (vaccination is null) return NotFound();
 
         ViewBag.Visit = vaccination.Visit;
+        ViewBag.ReturnUrl = returnUrl;
         return View(vaccination);
     }
 
     // POST /Admin/Vaccinations/Edit/5
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Vaccination model)
+    public async Task<IActionResult> Edit(int id, Vaccination model, string? returnUrl)
     {
         var vaccination = await _db.Vaccinations.FindAsync(id);
         if (vaccination is null) return NotFound();
@@ -89,6 +90,7 @@ public class VaccinationsController : Controller
         {
             ViewBag.Visit = await _db.VetVisits.Include(v => v.Pet)
                 .FirstOrDefaultAsync(v => v.VisitId == vaccination.VisitId);
+            ViewBag.ReturnUrl = returnUrl;
             model.VaccinationId = id;
             return View(model);
         }
@@ -105,6 +107,11 @@ public class VaccinationsController : Controller
         await _db.SaveChangesAsync();
 
         TempData["Success"] = "Vaccination updated.";
+
+        // Return to wherever the edit was launched from (the vaccinations list
+        // or the vet visit details page); fall back to the visit details page.
+        if (Url.IsLocalUrl(returnUrl))
+            return Redirect(returnUrl);
         return RedirectToAction("Details", "VetVisits", new { id = vaccination.VisitId });
     }
 

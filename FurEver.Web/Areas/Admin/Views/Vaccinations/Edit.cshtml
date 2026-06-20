@@ -1,6 +1,7 @@
 @model Vaccination
 @{
     var visit = (VeterinaryVisit?)ViewBag.Visit;
+    string? returnUrl = ViewBag.ReturnUrl;
     ViewData["Title"] = "Edit Vaccination";
     var isAjax = Context.Request.Headers["X-Requested-With"] == "XMLHttpRequest";
     if (isAjax) { Layout = null; }
@@ -16,6 +17,7 @@
         For @visit?.Pet?.PetName — @visit?.VisitType on @visit?.VisitDate.ToString("MMMM d, yyyy")
     </p>
     <form asp-area="Admin" asp-controller="Vaccinations" asp-action="Edit" asp-route-id="@Model.VaccinationId" method="post">
+        <input type="hidden" name="returnUrl" value="@returnUrl" />
         <partial name="_VaccinationForm" />
         <div class="modal-actions">
             <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
@@ -32,11 +34,19 @@ else
         </p>
 
         <form asp-area="Admin" asp-controller="Vaccinations" asp-action="Edit" asp-route-id="@Model.VaccinationId" method="post">
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
             <partial name="_VaccinationForm" />
             <div class="row mt-3">
                 <button type="submit" class="btn btn-primary">Save changes</button>
-                <a class="btn btn-secondary" asp-area="Admin" asp-controller="VetVisits"
-                   asp-action="Details" asp-route-id="@Model.VisitId">Cancel</a>
+                @if (Url.IsLocalUrl(returnUrl))
+                {
+                    <a class="btn btn-secondary" href="@returnUrl">Cancel</a>
+                }
+                else
+                {
+                    <a class="btn btn-secondary" asp-area="Admin" asp-controller="VetVisits"
+                       asp-action="Details" asp-route-id="@Model.VisitId">Cancel</a>
+                }
             </div>
         </form>
     </div>

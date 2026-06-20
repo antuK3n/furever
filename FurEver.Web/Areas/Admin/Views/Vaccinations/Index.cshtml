@@ -43,7 +43,8 @@
                         <td><span class="badge badge-@vax.Status.ToLower()">@vax.Status</span></td>
                         <td class="actions-cell">
                             <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Vaccinations"
-                               asp-action="Edit" asp-route-id="@vax.VaccinationId">Edit</a>
+                               asp-action="Edit" asp-route-id="@vax.VaccinationId"
+                               asp-route-returnUrl="@Url.Action("Index", "Vaccinations", new { area = "Admin", status })">Edit</a>
                             <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="VetVisits"
                                asp-action="Details" asp-route-id="@vax.VisitId">View Visit</a>
                         </td>

@@ -69,7 +69,7 @@
                             <td class="actions-cell">
                                 <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Vaccinations"
                                    asp-action="Edit" asp-route-id="@vax.VaccinationId"
-                                   data-modal-url="@Url.Action("Edit", "Vaccinations", new { area = "Admin", id = vax.VaccinationId })">Edit</a>
+                                   data-modal-url="@Url.Action("Edit", "Vaccinations", new { area = "Admin", id = vax.VaccinationId, returnUrl = Url.Action("Details", "VetVisits", new { area = "Admin", id = Model.VisitId }) })">Edit</a>
                                 <form asp-area="Admin" asp-controller="Vaccinations" asp-action="Delete"
                                       asp-route-id="@vax.VaccinationId" method="post" class="inline-form"
                                       data-confirm="Delete this vaccination record?" data-confirm-title="Delete vaccination?">
